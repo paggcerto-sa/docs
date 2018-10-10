@@ -1,0 +1,4197 @@
+{
+  "swagger": "2.0",
+  "schemes": [
+    "http"
+  ],
+  "host": "desenvolvedor.paggcerto.com.br",
+  "basePath": "/v2",
+  "info": {
+    "description": "**BEM-VINDO!** \n\n Apresentamos a você as inovações de meios de pagamentos da PAGGCERTO. \n\n A PAGGCERTO disponibiliza outras formas de pagamento, além do tradicional dinheiro em espécie, seguindo uma tendência mundial em utilizar cartões e smartphones para efetuar compras. Além de um serviço prático e seguro, o parceiro PAGGCERTO conta com uma integração que permite a realização de pagamentos com cartão de crédito, débito, boleto e carnê, split de pagamentos, relatórios e estatísticas de pagamento, gerenciamento de usuários e perfis, dentre outros serviços. \n\n Nesta nova versão, você encontrará uma descrição das principais formas de pagamento, e de cadastro, além de ter acesso a nossos ambientes, módulos e operações. \n# Você já possui a chave do seu aplicativo?\n Para se tornar um parceiro e obter sua chave do aplicativo é necessário solicitar seu cadastro através do nosso [Formulário de integração](https://docs.google.com/forms/d/e/1FAIpQLSfajsxxZeOpUSI77eQ3NcV6YzZ_aELfOzYN7UmP32-___cMBA/viewform). \n# Você já realizou sua autenticação?\n A autenticação de acesso aos nossos [ambientes](#section/Ambientes) é realizada por meio da geração de um Token de Acesso. Atualmente disponibilizamos dois tipos de ambientes, por isso é gerado um Token de Acesso para cada um deles.\n \n## Como obter o Token de Acesso? \n\n Inicialmente deve ser [Criada a conta do Titular](#operation/conta-titular) e logo em seguida sua [Autenticação](#operation/autenticar-com-credenciais) deve ser realizada. Assim, o Token de Acesso do Titular é gerado. Na seção [*Header*](#section/Requisicoes-para-API/Header) você têm mais informações sobre a utilização do Token.\n\n O titular poderá cadastrar usuários para realizar pagamentos e outras operações utilizando sua conta. Para mais detalhes verifique o módulo [Configuração de Usuários](#tag/perfil-do-usuario).  \n# Ambientes\n Disponibilizamos o **Ambiente Sandbox**, que permite ao usuário ter acesso as nossas APIs podendo realizar simulações, testes e verificações. Existem duas APIs: a **Account API** e a **Payments API**. A seguir estão os links para cada Ambiente: \n - Ambiente Sandbox da Account API: http://account.sandbox.paggcerto.com.br/\n \n - Ambiente Sandbox da Payments API: http://payments.sandbox.paggcerto.com.br/ \n \n - Ambiente Produção da Account API: https://account.paggcerto.com.br/\n  - Ambiente Produção da Payments API: https://payments.paggcerto.com.br/  \n# Requisições para API \n A comunicação é realizada através de requisições HTTP enviadas para nossas APIs, considerando os cabeçalhos (*header*) e o *status code* da resposta. A seguir estão descritos os cabeçalhos e cada *status code*  \n## Header \n \n\n No *header* de cada requisição você deve informar o Token de Acesso, que é gerado a partir do método [Autenticar com Credenciais](#operation/autenticar-com-credenciais) ou [Criar Nova Senha](#operation/criar-nova-senha). \n Abaixo está o modelo de como nosso *header* é composto: \n\n  *Authorization:* bearer Token de Acesso \n\n   *Content-Type:* Tipo de conteúdo \n\n De acordo com nosso modelo de *header*, criamos o exemplo a seguir: \n\n     Authorization: bearer eyJhbGciOiJIUcCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb9yZ \n\n     Content-Type: application/json \n## Status Code \n \n\n A tabela abaixo apresenta cada *status code* e suas descrições: \n\nCódigo  | Nome | Descrição\n----------------|-------------|---------\n200 | OK | Requisição processada com sucesso \n204 | No Content | Requisição processada com sucesso, porém nenhum conteúdo foi retornado \n400 | Bad Request | Falha no processamento da requisição ocasionada por erro na formatação do JSON ou de seus parâmetros \n401 | Unauthorized | Usuário não autenticado (credenciais incorretas ou token inválido) \n403 | Forbidden | Usuário autenticado, porém sem permissão (acesso negado) \n404 | Not Found | URL requisitada não existe \n422 | Unprocessable Entity | Falha no processamento da requisição ocasionada por validações internas não atendidas \n500 | Internal Server Error | Erro interno no servidor durante processamento da requisição \n\n",
+    "version": "2.0.0",
+    "title": "Paggcerto",
+    "contacto": {
+      "email": "integracoes@paggcerto.com.br "
+    },
+    "x-logo": {
+      "url": "https://paggcerto.com.br/inclusos/imagens/menu/marca.png"
+    }
+  },
+  "tags": [
+    {
+      "name": "conta titular",
+      "description": "Nesta seção será descrito o método de cadastro da conta do titular da aplicação."
+    },
+    {
+      "name": "métodos complementares",
+      "description": "Nesta seção serão descritos métodos de consulta, que apresentam informações complementares para a criação da [conta titular](#tag/conta-titular)"
+    },
+    {
+      "name": "autenticação",
+      "description": "O primeiro passo para utilizar as APIs da Paggcerto é realizar sua autenticação. Nesta etapa você vai gerar o token de acesso para se conectar com nossas APIs e assim realizar requisições. O token de acesso é confidencial e recomendamos não compartilhá-lo em ambientes públicos ou com terceiros. A seguir estão descritos os métodos que são responsáveis pela autenticação."
+    },
+    {
+      "name": "perfil do usuário",
+      "description": "O titular da conta pode configurar perfis de usuários para que outras pessoas possam realizar operações na conta do titular. O perfil determina quais métodos da API os usuários podem ter acesso. Nesta seção serão descritos todos os métodos para o gerenciamento dos perfis dos usuários."
+    },
+    {
+      "name": "permissões do perfil",
+      "description": "Para que o usuário acesse as funcionalidades (métodos ou recursos) da API, é necessário que ele esteja vinculado à um perfil e que este perfil tenha as devidas permissões. Nesta seção serão descritos todos os escopos e as permissões que cada escopo representa. \n## Permissões da API\n \n\n A tabela abaixo apresenta as permissões da API.\n\nEscopo  | Permissão \n----------------|-------------\naccount.roles.edit | Permite cadastrar, atualizar, desativar, ativar, remover perfis de usuários e conceder/revogar escopos. \naccount.roles.readonly | Permite consultar perfis de usuários. \naccount.users.edit | Permite cadastrar, atualizar, desativar, ativar e remover usuários. \naccount.users.readonly | Permite consultar usuários."
+    },
+    {
+      "name": "usuários",
+      "description": "Nesta seção serão descritos todos os métodos com funcionalidades para o gerenciamento dos usuários. Os usuários são pessoas que realizam operações em uma conta com a permissão do titular."
+    },
+    {
+      "name": "pagamentos",
+      "description": "Para realizar pagamentos acesse a documentação da nossa [Payments API](https://desenvolvedor.paggcerto.com.br/v2/payments/)."
+    },
+    {
+      "name": "webhook",
+      "description": "Para utilizar nosso *webhook* acesse a documentação [Webhook API](https://desenvolvedor.paggcerto.com.br/v2/webhook/)."
+    }
+  ],
+  "x-tagGroups": [
+    {
+      "name": "começando",
+      "tags": [
+        "conta titular",
+        "métodos complementares",
+        "confirmar conta",
+        "autenticação"
+      ]
+    },
+    {
+      "name": "configurações do usuário",
+      "tags": [
+        "perfil do usuário",
+        "permissões do perfil",
+        "usuários"
+      ]
+    },
+    {
+      "name": "",
+      "tags": [
+        "pagamentos",
+        "webhook"
+      ]
+    }
+  ],
+  "x-servers": [
+    {
+      "url": "//account.paggcerto.com.br/",
+      "description": "Ambiente de produção para Account API"
+    },
+    {
+      "url": "//account.sandbox.paggcerto.com.br/",
+      "description": "Ambiente de sandbox para Account API"
+    }
+  ],
+  "paths": {
+    "/api/v2/*applicationId*/signup/seller": {
+      "post": {
+        "tags": [
+          "conta titular"
+        ],
+        "x-servers": [
+          "account"
+        ],
+        "summary": "Criar conta",
+        "description": "Com a utilização deste método é criada a conta do titular. Após a finalização deste cadastro, o usuário deve fazer sua [Autenticação](#tag/autenticacao) e assim ter acesso aos recursos da API.\n\n  \n# \n \n##### **POST**  http://account.sandbox.paggcerto.com.br/api/v2/*applicationId*/signup/seller\n",
+        "operationId": "conta-titular",
+        "consumes": [
+          "application/json",
+          "application/xml"
+        ],
+        "produces": [
+          "application/xml",
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "applicationId",
+            "in": "path",
+            "description": "Identificador do aplicativo fornecido pela Paggcerto.",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/accountAPI/accountHolder"
+            }
+          }
+        ],
+        "resultados": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/accountAPI/responseAccountHolder/validAccountHolder"
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/accountAPI/responseAccountHolder/errorAccountHolder"
+            }
+          },
+          "422": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/accountAPI/responseAccountHolder/invalidAccountHolder"
+            },
+            "headers": {
+              "Tipos de erros": {
+                "description": "\n\nErro  | Descrição\n----------------|---------\nCITY_NOT_FOUND | Cidade não encontrada \nBUSINESS_ACTIVITY_NOT_FOUND | Ramo de atividade não encontrada \nBANK_NOT_FOUND | Banco não encontrado \nEMAIL_ALREADY_TAKEN |  E-mail já existente \nDUPLICATE_TAX_DOCUMENT |  CPF/CNPJ já existente  \n\n"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v2/presets": {
+      "post": {
+        "tags": [
+          "conta titular"
+        ],
+        "x-servers": [
+          "payments"
+        ],
+        "summary": "Configurar conta",
+        "description": "Com a utilização deste método o usuário titular pode realizar as seguintes configurações: \n\n   - Alterar conta bancária; \n\n   - Alterar o softdescriptor; \n\n   - Alterar o endereço; \n\n   - Escoher o dia para repasse: com 2 ou 32 dias. \n\n  \n# \n \n##### **POST**  http://account.sandbox.paggcerto.com.br/api/v2/presets\n",
+        "operationId": "configurar-conta",
+        "consumes": [
+          "application/json",
+          "application/xml"
+        ],
+        "produces": [
+          "application/xml",
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/accountAPI/configureHolder"
+            }
+          }
+        ],
+        "resultados": {
+          "204": {
+            "description": "No Content"
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/accountAPI/responseConfigureHolder/errorConfigureHolder"
+            }
+          },
+          "422": {
+            "description": "",
+            "headers": {
+              "Tipos de erros": {
+                "description": "\n\nErro  | Descrição\n----------------|---------\nCITY_NOT_FOUND | Cidade não encontrada \nBANK_NOT_FOUND | Banco não encontrado \nTRANSFER_DAY_NOT_AVAILABLE |  Dia para repasse não disponível \nWRONG_PASSWORD | Senha incorreta \n\n"
+              }
+            },
+            "schema": {
+              "$ref": "#/definitions/accountAPI/responseConfigureHolder/invalidConfigureHolder"
+            }
+          }
+        }
+      }
+    },
+    "/api/v2/presets ": {
+      "get": {
+        "tags": [
+          "conta titular"
+        ],
+        "summary": "Obter configurações da conta",
+        "description": "O objetivo deste método é apresentar todas as configurações da conta titular. \n\n  **GET** http://account.sandbox.paggcerto.com.br/api/v2/presets",
+        "operationId": "obter-configuracoes",
+        "consumes": [
+          "application/json",
+          "application/xml"
+        ],
+        "produces": [
+          "application/xml",
+          "application/json"
+        ],
+        "resultados": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/accountAPI/responseConfigureHolder/validConfigureHolder"
+            }
+          }
+        }
+      }
+    },
+    "/api/v2/business-types": {
+      "get": {
+        "tags": [
+          "métodos complementares"
+        ],
+        "summary": "Consultar tipo de empresa",
+        "description": "Com a utilização desta consulta são retornados informações de todos os tipos de empresa. \n\n Não é necessário estar autenticado para acessar este método. \n\n **GET**  http://account.sandbox.paggcerto.com.br/api/v2/business-types",
+        "operationId": "consultar-tipo-de-empresa",
+        "consumes": [
+          "application/json",
+          "application/xml"
+        ],
+        "produces": [
+          "application/xml",
+          "application/json"
+        ],
+        "resultados": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/accountAPI/ComplementaryMethods/responseBusinessTypes"
+            }
+          }
+        }
+      }
+    },
+    "/api/v2/cities/*UF*": {
+      "get": {
+        "tags": [
+          "métodos complementares"
+        ],
+        "summary": "Consultar cidades",
+        "description": "Com a utilização desta consulta são retornadas informações a respeito das cidades que estão localizadas no estado informado no endpoint. \n\n Não é necessário estar autenticado para acessar este método. \n\n  **GET** http://account.sandbox.paggcerto.com.br/api/v2/cities/*UF*",
+        "operationId": "consultar-cidades",
+        "consumes": [
+          "application/json",
+          "application/xml"
+        ],
+        "produces": [
+          "application/xml",
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "UF",
+            "in": "path",
+            "description": "Sigla do estado.",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "resultados": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/accountAPI/ComplementaryMethods/responseCity"
+            }
+          }
+        }
+      }
+    },
+    "/api/v2/cities":{
+      "get": {
+        "tags": [
+          "métodos complementares"
+        ],
+        "summary": "Consultar cidades pelo código do IBGE",
+        "description": "Com a utilização desta consulta são retornadas informações a respeito das cidades de acordo com o código do IBGE informado no *endpoint*. \n\n Não é necessário estar autenticado para acessar este método. \n\n  **GET** http://account.sandbox.paggcerto.com.br/api/v2/cities",
+        "operationId": "consultar-cidades-pelo-codigo-do-ibge",
+        "consumes": [
+          "application/json",
+          "application/xml"
+        ],
+        "produces": [
+          "application/xml",
+          "application/json"
+        ],
+        "parameters":[
+          {
+            "name": "code",
+            "in": "query",
+            "description": "Código do IBGE.",
+            "required": false,
+            "type": "array<number>"
+          }
+        ],
+        "resultados": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/accountAPI/ComplementaryMethods/responseCity"
+            }
+          }
+        }
+      }
+    },
+    "/api/v2/banks": {
+      "get": {
+        "tags": [
+          "métodos complementares"
+        ],
+        "summary": "Consultar bancos",
+        "description": "Com a utilização desta consulta são retornadas informações a respeito das instituições financeiras. \n\n Não é necessário estar autenticado para acessar este método. \n\n  **GET** http://account.sandbox.paggcerto.com.br/api/v2/banks",
+        "operationId": "consultar-bancos",
+        "consumes": [
+          "application/json",
+          "application/xml"
+        ],
+        "produces": [
+          "application/xml",
+          "application/json"
+        ],
+        "resultados": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/accountAPI/ComplementaryMethods/responseBanks"
+            }
+          }
+        }
+      }
+    },
+    "/api/v2/business-activities": {
+      "get": {
+        "tags": [
+          "métodos complementares"
+        ],
+        "summary": "Consultar ramo de atividade",
+        "description": "Com a utilização desta consulta são retornadas as informações de todos os ramos de atividades. \n\n Não é necessário estar autenticado para acessar este método. \n\n **GET** http://account.sandbox.paggcerto.com.br/api/v2/business-activities",
+        "operationId": "consultar-ramo-de-atividade",
+        "consumes": [
+          "application/json",
+          "application/xml"
+        ],
+        "produces": [
+          "application/xml",
+          "application/json"
+        ],
+        "resultados": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/accountAPI/ComplementaryMethods/responseBusinessActivities"
+            }
+          }
+        }
+      }
+    },
+    "/api/v2/marketing-medias": {
+      "get": {
+        "tags": [
+          "métodos complementares"
+        ],
+        "summary": "Consultar medias de marketing",
+        "description": "Com a utilização desta consulta são retornadas informações a respeito das medias de marketing, que possibilitaram o usuário conhecer a Paggcerto.  \n\n Não é necessário estar autenticado para acessar este método. \n\n **GET** http://account.sandbox.paggcerto.com.br/api/v2/marketing-medias",
+        "operationId": "consultar-media-de-marketing",
+        "consumes": [
+          "application/json",
+          "application/xml"
+        ],
+        "produces": [
+          "application/xml",
+          "application/json"
+        ],
+        "resultados": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/accountAPI/ComplementaryMethods/responseMarketingMedias"
+            }
+          }
+        }
+      }
+    },
+    "/api/v2/confirmation/send-selfie": {
+      "post": {
+        "tags": [
+          "confirmar conta"
+        ],
+        "summary": "Enviar Selfie",
+        "description": "O objetivo deste método é enviar uma selfie do titular da conta para a confirmação do cadastro. \n\n  \n# \n \n##### **POST**  http://account.dev.paggcerto.com.br/api/v2/confirmation/send-selfie\n",
+        "operationId": "enviar-selfie",
+        "consumes": [
+          "multipart/form-data"
+        ],
+        "produces": [
+          "multipart/form-data"
+        ],
+        "x-code-samples": [
+          {
+            "lang": "HTML",
+            "source": "<form id=\"myForm\">\n    <input type=\"file\" name=\"selfie\">\n</form>\n<script>\n    var myForm = selfie.getElementById('myForm');\n    var formData = new FormData(myForm);\n    $.ajax({\n        url: '/api/v2/confirmation/send-document',\n        data: formData,\n        type: 'POST',\n        contentType: false,\n        processData: false,\n        // ... Other options like success and etc\n    });\n</script>"
+          }
+        ],
+        "resultados": {
+          "204": {
+            "description": "No Content"
+          },
+          "422": {
+            "description": "",
+            "headers": {
+              "Tipos de erros": {
+                "description": "\n\nErro  | Descrição\n----------------|---------\nACCOUNT_ALREADY_APPROVED |  A conta do titular está confirmada \nACCOUNT_ALREADY_REPROVED | A conta do titular está reprovada \nACCOUNT_INACTIVE | A conta do titular está inativa \nSELFIE_ALREADY_SENT | Selfie já foi enviada\n\n"
+              }
+            },
+            "schema": {
+              "$ref": "#/definitions/accountAPI/responseConfirmAccount/invalidConfirmAccount"
+            }
+          }
+        }
+      }
+    },
+    "/api/v2/confirmation/send-document-front": {
+      "post": {
+        "tags": [
+          "confirmar conta"
+        ],
+        "summary": "Anexar frente do documento",
+        "description": "O objetivo deste método é enviar a foto da frente do documento do titular da conta para a confirmação do cadastro. \n\n  \n# \n \n##### **POST**  http://account.dev.paggcerto.com.br/api/v2/confirmation/send-document-front\n",
+        "operationId": "anexar-frente-do-documento",
+        "consumes": [
+          "multipart/form-data"
+        ],
+        "x-code-samples": [
+          {
+            "lang": "HTML",
+            "source": "<form id=\"myForm\">\n    <input type=\"file\" name=\"document\">\n</form>\n<script>\n    var myForm = document.getElementById('myForm');\n    var formData = new FormData(myForm);\n    $.ajax({\n        url: '/api/v2/confirmation/send-document-front',\n        data: formData,\n        type: 'POST',\n        contentType: false,\n        processData: false,\n        // ... Other options like success and etc\n    });\n</script>"
+          }
+        ],
+        "resultados": {
+          "204": {
+            "description": "No Content"
+          },
+          "422": {
+            "description": "",
+            "headers": {
+              "Tipos de erros": {
+                "description": "\n\nErro  | Descrição\n----------------|---------\nACCOUNT_ALREADY_APPROVED |  A conta do titular está confirmada \nACCOUNT_ALREADY_REPROVED | A conta do titular está reprovada \nACCOUNT_INACTIVE | A conta do titular está inativa \nDOCUMENT_ALREADY_SENT | Documento já foi enviado \n\n"
+              }
+            },
+            "schema": {
+              "$ref": "#/definitions/accountAPI/responseConfirmAccount/invalidConfirmAccount"
+            }
+          }
+        }
+      }
+    },
+    "/api/v2/confirmation/send-document-back": {
+      "post": {
+        "tags": [
+          "confirmar conta"
+        ],
+        "summary": "Anexar verso do documento",
+        "description": "O objetivo deste método é enviar a foto do verso do documento do titular da conta para a confirmação do cadastro. \n\n  \n# \n \n##### **POST**  http://account.dev.paggcerto.com.br/api/v2/confirmation/send-document-back\n",
+        "operationId": "anexar-verso-do-documento",
+        "consumes": [
+          "multipart/form-data"
+        ],
+        "x-code-samples": [
+          {
+            "lang": "HTML",
+            "source": "<form id=\"myForm\">\n    <input type=\"file\" name=\"document\">\n</form>\n<script>\n    var myForm = document.getElementById('myForm');\n    var formData = new FormData(myForm);\n    $.ajax({\n        url: '/api/v2/confirmation/send-document-back',\n        data: formData,\n        type: 'POST',\n        contentType: false,\n        processData: false,\n        // ... Other options like success and etc\n    });\n</script>"
+          }
+        ],
+        "resultados": {
+          "204": {
+            "description": "No Content"
+          },
+          "422": {
+            "description": "",
+            "headers": {
+              "Tipos de erros": {
+                "description": "\n\nErro  | Descrição\n----------------|---------\nACCOUNT_ALREADY_APPROVED |  A conta do titular está confirmada \nACCOUNT_ALREADY_REPROVED | A conta do titular está reprovada \nACCOUNT_INACTIVE | A conta do titular está inativa \nDOCUMENT_ALREADY_SENT | Documento já foi enviado \n\n"
+              }
+            },
+            "schema": {
+              "$ref": "#/definitions/accountAPI/responseConfirmAccount/invalidConfirmAccount"
+            }
+          }
+        }
+      }
+    },
+    "/api/v2/*applicationId*/signin": {
+      "post": {
+        "tags": [
+          "autenticação"
+        ],
+        "summary": "Autenticar com credenciais",
+        "description": "O objetivo da autenticação do usuário é ter como resultado a geração do Token de Acesso. O token gerado para o ambiente sandbox é diferente do token do ambiente de produção. \n\n  \n# \n \n##### **POST**  http://account.sandbox.paggcerto.com.br/api/v2/*applicationId*/signin\n",
+        "operationId": "autenticar-com-credenciais",
+        "consumes": [
+          "application/json",
+          "application/xml"
+        ],
+        "produces": [
+          "application/xml",
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "applicationId",
+            "in": "path",
+            "description": "Identificador do aplicativo fornecido pela Paggcerto.",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/accountAPI/authenticate"
+            }
+          }
+        ],
+        "resultados": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/accountAPI/responseAuthenticate/validAuthenticate"
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/accountAPI/responseAuthenticate/errorAuthenticate"
+            }
+          }
+        }
+      }
+    },
+    "/api/v2/*applicationId*/signin/*hash*": {
+      "post": {
+        "tags": [
+          "autenticação"
+        ],
+        "summary": "Autenticar com hash",
+        "description": "A finalidade deste método é realizar a autenticação do usuário através do **Hash** que foi enviado ao e-mail do usuário. Como resultado, é gerado o token temporário, que deve ser utilizado para [Criar Nova Senha](#operation/criar-nova-senha). \n\n  \n# \n \n##### **POST**  http://account.sandbox.paggcerto.com.br/api/v2/*applicationId*/signin/*hash*\n",
+        "operationId": "autenticar-com-hash",
+        "consumes": [
+          "application/json",
+          "application/xml"
+        ],
+        "produces": [
+          "application/xml",
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "applicationId",
+            "in": "path",
+            "description": "Identificador do aplicativo fornecido pela Paggcerto. ",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "hash",
+            "in": "path",
+            "description": "Hash do usuário, que foi enviado por e-mail.",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "resultados": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/accountAPI/authenticateHash"
+            }
+          },
+          "422": {
+            "description": "",
+            "headers": {
+              "Tipos de erros": {
+                "description": "\n\nErro  | Descrição\n----------------|---------\nINVALID_HASH |  O hash está inválido \nEXPIRED_HASH | O hash está expirado \n\n"
+              }
+            },
+            "schema": {
+              "$ref": "#/definitions/accountAPI/responseAuthenticateHash/invalidAuthenticateHash"
+            }
+          }
+        }
+      }
+    },
+    "/api/v2/create-password": {
+      "post": {
+        "tags": [
+          "autenticação"
+        ],
+        "summary": "Criar nova senha",
+        "description": "Após o primeiro acesso ou recuperação de senha, o usuário deve criar sua senha para obter seu token de acesso permanente. \n\n  \n# \n \n##### **POST**  http://account.sandbox.paggcerto.com.br/api/v2/create-password\n",
+        "operationId": "criar-nova-senha",
+        "consumes": [
+          "application/json",
+          "application/xml"
+        ],
+        "produces": [
+          "application/xml",
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/accountAPI/createPassword"
+            }
+          }
+        ],
+        "resultados": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/accountAPI/responseCreatePassword/validCreatePassword"
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/accountAPI/responseCreatePassword/errorCreatePassword"
+            }
+          }
+        }
+      }
+    },
+    "/api/v2/change-password": {
+      "post": {
+        "tags": [
+          "autenticação"
+        ],
+        "summary": "Alterar senha",
+        "description": "A finalidade deste método é realizar a alteração da senha do usuário e obter o novo token de acesso. \n\n  \n# \n \n##### **POST**  http://account.sandbox.paggcerto.com.br/api/v2/change-password\n",
+        "operationId": "alterar-senha",
+        "consumes": [
+          "application/json",
+          "application/xml"
+        ],
+        "produces": [
+          "application/xml",
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/accountAPI/changePassword"
+            }
+          }
+        ],
+        "resultados": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/accountAPI/responseChangePassword/validChangePassword"
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/accountAPI/responseChangePassword/errorChangePassword"
+            }
+          },
+          "422": {
+            "description": "",
+            "headers": {
+              "Tipos de erros": {
+                "description": "\n\nErro  | Descrição\n----------------|---------\nWRONG_PASSWORD  | Senha incorreta \n\n"
+              }
+            },
+            "schema": {
+              "$ref": "#/definitions/accountAPI/responseChangePassword/invalidChangePassword"
+            }
+          }
+        }
+      }
+    },
+    "/api/v2/*aplicationId*/send-email-recovery": {
+      "post": {
+        "tags": [
+          "autenticação"
+        ],
+        "summary": "Recuperar senha",
+        "description": "O objetivo deste método é recuperar  a senha do usuário. Ao realizar a requisição, será enviado um e-mail ao usuário com o **Hash**, esse hash deve ser utilizado no método [Autenticar com Hash](#operation/autenticar-com-hash). \n\n  \n# \n \n##### **POST**  http://account.sandbox.paggcerto.com.br/api/v2/*aplicationId*/send-email-recovery\n",
+        "operationId": "recuperar-senha",
+        "consumes": [
+          "application/json",
+          "application/xml"
+        ],
+        "produces": [
+          "application/xml",
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "applicationId",
+            "in": "path",
+            "description": "Identificador do aplicativo fornecido pela Paggcerto. ",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/accountAPI/recoverPassword"
+            }
+          }
+        ],
+        "resultados": {
+          "204": {
+            "description": "No Content"
+          },
+          "422": {
+            "description": "",
+            "headers": {
+              "Tipos de erros": {
+                "description": "\n\nErro  | Descrição\n----------------|---------\nUSER_NOT_FOUND |  Usuário não encontrado \n\n"
+              }
+            },
+            "schema": {
+              "$ref": "#/definitions/accountAPI/responseRecoverPassword/invalidRecoverPassword"
+            }
+          }
+        }
+      }
+    },
+    "/api/v2/whoami": {
+      "get": {
+        "tags": [
+          "autenticação"
+        ],
+        "summary": "Identificar usuário",
+        "description": "O objetivo é identificar o usuário por meio do token de acesso informado no *header*. \n\n  \n# \n \n##### **GET**  http://account.sandbox.paggcerto.com.br/api/v2/whoami\n",
+        "operationId": "identificar-usuario",
+        "consumes": [
+          "application/json",
+          "application/xml"
+        ],
+        "produces": [
+          "application/xml",
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "scope",
+            "in": "query",
+            "description": "Escopo exigido para acessar um determinado recurso do serviço.",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "resultados": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/accountAPI/responseWhoami/validWhoami"
+            }
+          }
+        }
+      }
+    },
+    "/api/v2/roles ": {
+      "post": {
+        "tags": [
+          "perfil do usuário"
+        ],
+        "summary": "Criar perfil",
+        "description": "Com a utilização deste método um novo perfil é criado. \n\n Para ter acesso a esse método, é necessário ter a seguinte permissão: [account.roles.edit](#tag/permissoes-do-perfil) \n\n  \n# \n \n##### **POST**  http://account.sandbox.paggcerto.com.br/api/v2/roles\n",
+        "operationId": "criar-perfil",
+        "consumes": [
+          "application/json",
+          "application/xml"
+        ],
+        "produces": [
+          "application/xml",
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/accountAPI/Role/createRole"
+            }
+          }
+        ],
+        "resultados": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/accountAPI/Role/responseCreateRole/validCreateRole"
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/accountAPI/Role/responseCreateRole/errorCreateRole"
+            }
+          }
+        }
+      }
+    },
+    "/api/v2/roles/*id*  ": {
+      "put": {
+        "tags": [
+          "perfil do usuário"
+        ],
+        "summary": "Atualizar perfil",
+        "description": "O objetivo deste método é atualizar o perfil que foi especificado no endpoint. \n\n Para ter acesso a esse método, é necessário ter a seguinte permissão: [account.roles.edit](#tag/permissoes-do-perfil) \n\n  \n# \n \n##### **PUT**  http://account.sandbox.paggcerto.com.br/api/v2/roles/*id*\n",
+        "operationId": "atualizar-perfil",
+        "consumes": [
+          "application/json",
+          "application/xml"
+        ],
+        "produces": [
+          "application/xml",
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID do perfil do usuário que será atualizado.",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/accountAPI/Role/updateRole"
+            }
+          }
+        ],
+        "resultados": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/accountAPI/Role/responseUpdateRole/validUpdateRole"
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/accountAPI/Role/responseUpdateRole/errorUpdateRole"
+            }
+          },
+          "422": {
+            "description": "",
+            "headers": {
+              "Tipos de erros": {
+                "description": "\n\nErro  | Descrição\n----------------|---------\nROLE_NOT_FOUND | Perfil não encontrado \n\n"
+              }
+            },
+            "schema": {
+              "$ref": "#/definitions/accountAPI/Role/invalidRole"
+            }
+          }
+        }
+      }
+    },
+    "/api/v2/roles": {
+      "get": {
+        "tags": [
+          "perfil do usuário"
+        ],
+        "summary": "Listar perfis",
+        "description": "O objetivo deste método é listar todos os perfis. \n\n Para ter acesso a esse método, é necessário ter a seguinte permissão: [account.roles.readonly](#tag/permissoes-do-perfil) \n\n  \n# \n \n##### **GET**  http://account.sandbox.paggcerto.com.br/api/v2/roles\n",
+        "operationId": "listar-perfis",
+        "consumes": [
+          "application/json",
+          "application/xml"
+        ],
+        "produces": [
+          "application/xml",
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "name",
+            "in": "query",
+            "description": "Nome do perfil.",
+            "required": false,
+            "maxLength": 80,
+            "type": "string"
+          },
+          {
+            "name": "index",
+            "in": "query",
+            "description": "Índice da lista.",
+            "required": false,
+            "type": "number",
+            "default": 0
+          },
+          {
+            "name": "length",
+            "in": "query",
+            "description": "Quantidade máxima de itens retornados na lista.",
+            "required": false,
+            "type": "number",
+            "default": 30
+          }
+        ],
+        "resultados": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/accountAPI/Role/responseListRole/validListRole"
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/accountAPI/responsePagination/errorPagination"
+            }
+          }
+        }
+      }
+    },
+    "/api/v2/roles/*id*": {
+      "get": {
+        "tags": [
+          "perfil do usuário"
+        ],
+        "summary": "Pesquisar perfil",
+        "description": "Esse método deve ser utilizado quando se deseja pesquisar um perfil específico. \n\n Para ter acesso a esse método, é necessário ter a seguinte permissão: [account.roles.readonly](#tag/permissoes-do-perfil) \n\n  \n# \n \n##### **GET**  http://account.sandbox.paggcerto.com.br/api/v2/roles/*id*\n",
+        "operationId": "pesquisar-perfil",
+        "consumes": [
+          "application/json",
+          "application/xml"
+        ],
+        "produces": [
+          "application/xml",
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID do perfil que será pesquisado.",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "resultados": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/accountAPI/Role/searchRole"
+            }
+          },
+          "422": {
+            "description": "",
+            "headers": {
+              "Tipos de erros": {
+                "description": "\n\nErro  | Descrição\n----------------|---------\nROLE_NOT_FOUND |  Perfil não encontrado \n\n"
+              }
+            },
+            "schema": {
+              "$ref": "#/definitions/accountAPI/Role/invalidRole"
+            }
+          }
+        }
+      }
+    },
+    "/api/v2/roles/*id*/deactivate": {
+      "post": {
+        "tags": [
+          "perfil do usuário"
+        ],
+        "summary": "Desativar perfil",
+        "description": "Com a utilização deste método o perfil é desativado. \n\n Para ter acesso a esse método, é necessário ter a seguinte permissão: [account.roles.edit](#tag/permissoes-do-perfil) \n\n  \n# \n \n##### **POST**  http://account.sandbox.paggcerto.com.br/api/v2/roles/*id*/deactivate\n",
+        "operationId": "desativar-perfil",
+        "consumes": [
+          "application/json",
+          "application/xml"
+        ],
+        "produces": [
+          "application/xml",
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID do perfil que será desativado.",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "resultados": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/accountAPI/Role/desactiveRole"
+            }
+          },
+          "422": {
+            "description": "",
+            "headers": {
+              "Tipos de erros": {
+                "description": "\n\nErro  | Descrição\n----------------|---------\nALREADY_INACTIVE|  Perfil está inativo \nROLE_NOT_FOUND |  Perfil não encontrado \n\n"
+              }
+            },
+            "schema": {
+              "$ref": "#/definitions/accountAPI/Role/invalidRole"
+            }
+          }
+        }
+      }
+    },
+    "/api/v2/roles/*id*/activate": {
+      "post": {
+        "tags": [
+          "perfil do usuário"
+        ],
+        "summary": "Ativar perfil",
+        "description": "Com a utilização deste método o perfil é ativado. \n\n Para ter acesso a esse método, é necessário ter a seguinte permissão: [account.roles.edit](#tag/permissoes-do-perfil) \n\n  \n# \n \n##### **POST**  http://account.sandbox.paggcerto.com.br/api/v2/roles/*id*/activate\n",
+        "operationId": "ativar-perfil",
+        "consumes": [
+          "application/json",
+          "application/xml"
+        ],
+        "produces": [
+          "application/xml",
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID do perfil que será ativado.",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "resultados": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/accountAPI/Role/activeRole"
+            }
+          },
+          "422": {
+            "description": "",
+            "headers": {
+              "Tipos de erros": {
+                "description": "\n\nErro  | Descrição\n----------------|---------\nALREADY_ACTIVE |  Perfil está ativo \nUSER_NOT_FOUND |  Perfil não encontrado \n\n"
+              }
+            },
+            "schema": {
+              "$ref": "#/definitions/accountAPI/Role/invalidRole"
+            }
+          }
+        }
+      }
+    },
+    "/api/v2/roles/*id* ": {
+      "delete": {
+        "tags": [
+          "perfil do usuário"
+        ],
+        "summary": "Remover perfil",
+        "description": "A finalidade deste método é remover o perfil especificado no endpoint. Se o perfil possuir usuário vinculado, ele não poderá ser removido. \n\n Para ter acesso a esse método, é necessário ter a seguinte permissão: [account.roles.edit](#tag/permissoes-do-perfil) \n\n \n\n  \n# \n \n##### **DELETE**  http://account.sandbox.paggcerto.com.br/api/v2/roles/*id*",
+        "operationId": "remover-perfil",
+        "produces": [
+          "application/xml",
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID do perfil que será removido.",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "resultados": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/accountAPI/Role/deleteRole"
+            }
+          },
+          "422": {
+            "description": "",
+            "headers": {
+              "Tipos de erros": {
+                "description": "\n\nErro  | Descrição\n----------------|---------\nROLE_NOT_FOUND |  Perfil não encontrado \nHAS_USERS | O perfil possui usuário vinculado \n\n"
+              }
+            },
+            "schema": {
+              "$ref": "#/definitions/accountAPI/Role/invalidRole"
+            }
+          }
+        }
+      }
+    },
+    "/api/v2/roles/*roleId*/scopes/grant": {
+      "post": {
+        "tags": [
+          "permissões do perfil"
+        ],
+        "summary": "Conceder permissões",
+        "description": "Com a utilização deste método as permissões serão concedidas ao perfil do usuário. \n\n  \n# \n \n##### **POST**  http://account.sandbox.paggcerto.com.br/api/v2/roles/*roleId*/scopes/grant",
+        "operationId": "conceder-permissoes",
+        "produces": [
+          "application/xml",
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "roleId",
+            "in": "path",
+            "description": "ID do perfil do usuário para conceder as permissões.",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/accountAPI/Permission/grantPermission"
+            }
+          }
+        ],
+        "resultados": {
+          "204": {
+            "description": "No Content"
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/accountAPI/Permission/responseRevokePermission/errorRevokePermission"
+            }
+          },
+          "422": {
+            "description": "",
+            "headers": {
+              "Tipos de erros": {
+                "description": "\n\nErro  | Descrição\n----------------|---------\nROLE_NOT_FOUND |  Perfil não encontrado \n\n"
+              }
+            },
+            "schema": {
+              "$ref": "#/definitions/accountAPI/Role/invalidRole"
+            }
+          }
+        }
+      }
+    },
+    "/api/v2/roles/*roleId*/scopes/revoke": {
+      "post": {
+        "tags": [
+          "permissões do perfil"
+        ],
+        "summary": "Revogar permissões",
+        "description": "Ao utilizar este método as permissões concedidas ao perfil do usuário serão removidas. \n\n  \n# \n \n##### **POST**  http://account.sandbox.paggcerto.com.br/api/v2/roles/*roleId*/scopes/revoke",
+        "operationId": "revogar-permissoes",
+        "produces": [
+          "application/xml",
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "roleId",
+            "in": "path",
+            "description": "ID do perfil do usuário para a remoção das permissões.",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/accountAPI/Permission/revokePermission"
+            }
+          }
+        ],
+        "resultados": {
+          "204": {
+            "description": "No Content"
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/accountAPI/Permission/responseRevokePermission/errorRevokePermission"
+            }
+          },
+          "422": {
+            "description": "",
+            "headers": {
+              "Tipos de erros": {
+                "description": "\n\nErro  | Descrição\n----------------|---------\nROLE_NOT_FOUND |  Perfil não encontrado \n\n"
+              }
+            },
+            "schema": {
+              "$ref": "#/definitions/accountAPI/Role/invalidRole"
+            }
+          }
+        }
+      }
+    },
+    "/api/v2/users ": {
+      "post": {
+        "tags": [
+          "usuários"
+        ],
+        "summary": "Criar usuário",
+        "description": "Com a utilização deste método um novo usuário é criado. Os usuários recém-criados receberão por e-mail o hash de autenticação, que será utilizado no método [Autenticar com Hash](#operation/autenticar-com-hash). \n\n Para acessar esse método é necessário ter a seguinte permissão: [account.users.edit](#tag/permissoes-do-perfil) \n\n  \n# \n \n##### **POST**  http://account.sandbox.paggcerto.com.br/api/v2/users\n",
+        "operationId": "criar-usuario",
+        "consumes": [
+          "application/json",
+          "application/xml"
+        ],
+        "produces": [
+          "application/xml",
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/accountAPI/User/createUser"
+            }
+          }
+        ],
+        "resultados": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/accountAPI/user"
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/accountAPI/User/responseCreateUser/errorCreateUser"
+            }
+          },
+          "422": {
+            "description": "",
+            "headers": {
+              "Tipos de erros": {
+                "description": "\n\nErro  | Descrição\n----------------|---------\nDUPLICATE_TAX_DOCUMENT |  CPF/CNPJ já existente \nEMAIL_ALREADY_TAKEN |  E-mail já existente \nROLE_NOT_FOUND |  Perfil do usuário não encontrado \n\n"
+              }
+            },
+            "schema": {
+              "$ref": "#/definitions/accountAPI/User/responseCreateUser/invalidCreateUser"
+            }
+          }
+        }
+      }
+    },
+    "/api/v2/users/*id*  ": {
+      "put": {
+        "tags": [
+          "usuários"
+        ],
+        "summary": "Atualizar usuário",
+        "description": "Com a utilização deste método os dados do usuário serão atualizados. \n\n Para ter acesso a esse método, é necessário ter a seguinte permissão: [account.users.edit](#tag/permissoes-do-perfil) \n\n  \n# \n \n##### **PUT**  http://account.sandbox.paggcerto.com.br/api/v2/users/*id*\n",
+        "operationId": "atualizar-usuario",
+        "consumes": [
+          "application/json",
+          "application/xml"
+        ],
+        "produces": [
+          "application/xml",
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID do usuário que será atualizado.",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/accountAPI/User/updateUser"
+            }
+          }
+        ],
+        "resultados": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/accountAPI/user"
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/accountAPI/User/responseUpdateUser/errorUpdateUser"
+            }
+          },
+          "422": {
+            "description": "",
+            "headers": {
+              "Tipos de erros": {
+                "description": "\n\nErro  | Descrição\n----------------|---------\nDUPLICATE_TAX_DOCUMENT |  CPF/CNPJ já existente \nEMAIL_ALREADY_TAKEN |  E-mail já existente \nROLE_NOT_FOUND | Perfil do usuário não encontrado \nUSER_NOT_FOUND | Usuário não encontrado \n\n"
+              }
+            },
+            "schema": {
+              "$ref": "#/definitions/accountAPI/User/responseUpdateUser/invalidUpdateUser"
+            }
+          }
+        }
+      }
+    },
+    "/api/v2/users": {
+      "get": {
+        "tags": [
+          "usuários"
+        ],
+        "summary": "Listar usuários",
+        "description": "O objetivo deste método é listar todos os usuários que estão na base de dados. \n\n Para ter acesso a esse método, é necessário ter a seguinte permissão: [account.users.readonly](#tag/permissoes-do-perfil) \n\n  \n# \n \n##### **GET**  http://account.sandbox.paggcerto.com.br/api/v2/users\n",
+        "operationId": "listar-usuarios",
+        "consumes": [
+          "application/json",
+          "application/xml"
+        ],
+        "produces": [
+          "application/xml",
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "fullName",
+            "in": "query",
+            "description": "Nome do usuário.",
+            "required": false,
+            "maxLength": 120,
+            "type": "string"
+          },
+          {
+            "name": "email",
+            "in": "query",
+            "description": "E-mail do usuário.",
+            "required": false,
+            "maxLength": 120,
+            "type": "string"
+          },
+          {
+            "name": "taxDocument",
+            "in": "query",
+            "description": "CPF do usuário.",
+            "required": false,
+            "maxLength": 14,
+            "type": "string"
+          },
+          {
+            "name": "index",
+            "in": "query",
+            "description": "Índice da lista.",
+            "required": false,
+            "type": "number",
+            "default": 0
+          },
+          {
+            "name": "length",
+            "in": "query",
+            "description": "Quantidade máxima de itens retornados na lista.",
+            "required": false,
+            "type": "number",
+            "default": 30
+          }
+        ],
+        "resultados": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/accountAPI/User/responseListUsers/validListUsers"
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/accountAPI/responsePagination/errorPagination"
+            }
+          }
+        }
+      }
+    },
+    "/api/v2/users/*id*": {
+      "get": {
+        "tags": [
+          "usuários"
+        ],
+        "summary": "Pesquisar usuário",
+        "description": "Esse método deve ser utilizado quando se deseja pesquisar um usuário específico. \n\n Para ter acesso a esse método, é necessário ter a seguinte permissão: [account.users.readonly](#tag/permissoes-do-perfil) \n\n  \n# \n \n##### **GET**  http://account.sandbox.paggcerto.com.br/api/v2/users/*id*\n",
+        "operationId": "pesquisar-usuario",
+        "consumes": [
+          "application/json",
+          "application/xml"
+        ],
+        "produces": [
+          "application/xml",
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID do usuário que será pesquisado. ",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "resultados": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/accountAPI/user"
+            }
+          },
+          "422": {
+            "description": "",
+            "headers": {
+              "Tipos de erros": {
+                "description": "\n\nErro  | Descrição\n----------------|---------\nUSER_NOT_FOUND |  Usuário não encontrado \n\n"
+              }
+            },
+            "schema": {
+              "$ref": "#/definitions/accountAPI/User/invalidUser"
+            }
+          }
+        }
+      }
+    },
+    "/api/v2/users/*id*/deactivate": {
+      "post": {
+        "tags": [
+          "usuários"
+        ],
+        "summary": "Desativar usuário",
+        "description": "Com a utilização deste método o usuário é desativado. \n\n Para ter acesso a esse método, é necessário ter a seguinte permissão: [account.users.edit](#tag/permissoes-do-perfil) \n\n  \n# \n \n##### **POST**  http://account.sandbox.paggcerto.com.br/api/v2/users/*id*/deactivate\n",
+        "operationId": "desativar-usuario",
+        "consumes": [
+          "application/json",
+          "application/xml"
+        ],
+        "produces": [
+          "application/xml",
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID do usuário que será desativado.",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "resultados": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/accountAPI/User/desactiveUser"
+            }
+          },
+          "422": {
+            "description": "",
+            "headers": {
+              "Tipos de erros": {
+                "description": "\n\nErro  | Descrição\n----------------|---------\nALREADY_INACTIVE|  Usuário está inativo \nUSER_NOT_FOUND |  Usuário não encontrado \n\n"
+              }
+            },
+            "schema": {
+              "$ref": "#/definitions/accountAPI/User/invalidUser"
+            }
+          }
+        }
+      }
+    },
+    "/api/v2/users/*id*/activate": {
+      "post": {
+        "tags": [
+          "usuários"
+        ],
+        "summary": "Ativar usuário",
+        "description": "Com a utilização deste método o usuário é ativado. \n\n Para ter acesso a esse método, é necessário ter a seguinte permissão: [account.users.edit](#tag/permissoes-do-perfil) \n\n  \n# \n \n##### **POST**  http://account.sandbox.paggcerto.com.br/api/v2/users/*id*/activate\n",
+        "operationId": "ativar-usuario",
+        "consumes": [
+          "application/json",
+          "application/xml"
+        ],
+        "produces": [
+          "application/xml",
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID do usuário que será ativado.",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "resultados": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/accountAPI/user"
+            }
+          },
+          "422": {
+            "description": "",
+            "headers": {
+              "Tipos de erros": {
+                "description": "\n\nErro  | Descrição\n----------------|---------\nALREADY_ACTIVE |  Usuário está ativo \nUSER_NOT_FOUND |  Usuário não encontrado \n\n"
+              }
+            },
+            "schema": {
+              "$ref": "#/definitions/accountAPI/User/invalidUser"
+            }
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "accountAPI": {
+      "responseConfirmAccount": {
+        "invalidConfirmAccount": {
+          "type": "object",
+          "properties": {
+            "error": {
+              "description": "Especificação do erro.",
+              "type": "string",
+              "example": "ACCOUNT_ALREADY_APPROVED"
+            }
+          }
+        }
+      },
+      "createPassword": {
+        "type": "object",
+        "required": [
+          "password"
+        ],
+        "properties": {
+          "password": {
+            "type": "string",
+            "description": "Senha do usuário.",
+            "format": "password",
+            "minLength": 6,
+            "maxLength": 20,
+            "example": "95238473"
+          }
+        }
+      },
+      "responseCreatePassword": {
+        "validCreatePassword": {
+          "type": "object",
+          "properties": {
+            "token": {
+              "description": "Token gerado após a criação da senha do usuário.",
+              "type": "string",
+              "example": "6798873jfnfeibneiKIL.iklopwUJHNOO0LO"
+            }
+          }
+        },
+        "errorCreatePassword": {
+          "type": "object",
+          "properties": {
+            "errors": {
+              "type": "array",
+              "xml": {
+                "name": "Array<String>",
+                "wrapped": true
+              },
+              "items": {
+                "$ref": "#/definitions/accountAPI/responseCreatePassword/errors"
+              }
+            }
+          }
+        },
+        "errors": {
+          "description": "Lista contendo alguns erros.",
+          "type": "string",
+          "example": "password: Required."
+        }
+      },
+      "changePassword": {
+        "type": "object",
+        "required": [
+          "oldPassword",
+          "password"
+        ],
+        "properties": {
+          "oldPassword": {
+            "type": "string",
+            "description": "Senha atual do usuário.",
+            "format": "password",
+            "minLength": 6,
+            "maxLength": 20,
+            "example": "1234567894562"
+          },
+          "password": {
+            "type": "string",
+            "description": "Nova senha do usuário.",
+            "format": "password",
+            "minLength": 6,
+            "maxLength": 20,
+            "example": "95238473"
+          }
+        }
+      },
+      "responseChangePassword": {
+        "validChangePassword": {
+          "type": "object",
+          "properties": {
+            "token": {
+              "description": "Token gerado após a alteração da senha do usuário.",
+              "type": "string",
+              "example": "DFKMWFMKCnninudfhuie.eflcdfvcdfsqwq213"
+            }
+          }
+        },
+        "errorChangePassword": {
+          "type": "object",
+          "properties": {
+            "errors": {
+              "type": "array",
+              "xml": {
+                "name": "Array<String>",
+                "wrapped": true
+              },
+              "items": {
+                "$ref": "#/definitions/accountAPI/responseChangePassword/errors"
+              }
+            }
+          }
+        },
+        "errors": {
+          "description": "Lista contendo alguns erros.",
+          "type": "string",
+          "example": "password: Required."
+        },
+        "invalidChangePassword": {
+          "type": "object",
+          "properties": {
+            "error": {
+              "description": "Especificação do erro.",
+              "type": "string",
+              "example": "WRONG_PASSWORD"
+            }
+          }
+        }
+      },
+      "recoverPassword": {
+        "type": "object",
+        "required": [
+          "email",
+          "appUrl"
+        ],
+        "properties": {
+          "email": {
+            "description": "E-mail do usuário para recuperar a senha.",
+            "type": "string",
+            "maxLength": 120,
+            "example": "joao@email.com"
+          },
+          "appUrl": {
+            "description": "Url do aplicativo especificado no e-mail.",
+            "type": "string",
+            "example": "http://meuaplicativo.com.br/"
+          }
+        }
+      },
+      "responseRecoverPassword": {
+        "invalidRecoverPassword": {
+          "type": "object",
+          "properties": {
+            "error": {
+              "description": "Especificação do erro.",
+              "type": "string",
+              "example": "USER_NOT_FOUND"
+            }
+          }
+        }
+      },
+      "role": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "description": "Identificador único gerado automaticamente após o cadastro.",
+            "type": "string",
+            "example": "x9"
+          },
+          "name": {
+            "description": "Nome do perfil do usuário.",
+            "type": "string",
+            "example": "Gerente financeiro"
+          },
+          "active": {
+            "description": "Informa se o perfil está ativo ou não. Os usuários associados a um perfil inativo terão seu acesso bloqueado.",
+            "type": "boolean",
+            "example": true
+          },
+          "createdAt": {
+            "description": "Data e hora em que o perfil foi criado.",
+            "type": "string",
+            "example": "2018-04-10T14:14:20.1394168"
+          }
+        }
+      },
+      "perfil": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "description": "Identificador único gerado automaticamente após o cadastro.",
+            "type": "string",
+            "example": "x9"
+          },
+          "name": {
+            "description": "Nome do perfil.",
+            "type": "string",
+            "example": "Setor Financeiro"
+          },
+          "active": {
+            "description": "Informa se o perfil está ativo ou não.",
+            "type": "boolean",
+            "example": true
+          },
+          "createdAt": {
+            "description": "Data e hora em que o perfil foi criado.",
+            "type": "string",
+            "example": "2018-04-17T17:38:40.9565295-03:00"
+          },
+          "scopes": {
+            "description": "Lista com as permissões concedidas ao perfil.",
+            "type": "array<string>",
+            "example": [
+              "resource-one.example.readonly",
+              "resource-two.example.readonly",
+              "resource-three.example.edit"
+            ]
+          }
+        }
+      },
+      "holder": {
+        "description": "Informações pessoais do titular da conta e de sua empresa.",
+        "type": "object",
+        "properties": {
+          "id": {
+            "description": "Identificador único gerado automaticamente após o cadastro.",
+            "type": "string",
+            "example": "nR"
+          },
+          "fullName": {
+            "description": "Nome completo do titular da conta.",
+            "type": "string",
+            "example": "Valentina Santos"
+          },
+          "email": {
+            "description": "E-mail do usuário.",
+            "type": "string",
+            "example": "valentina@email.com"
+          },
+          "birthDate": {
+            "description": "Data de nascimento.",
+            "type": "string",
+            "example": "1995-01-18"
+          },
+          "gender": {
+            "description": "`F` - Feminino, `M` - Masculino, `O` - Outros",
+            "type": "char",
+            "example": "F"
+          },
+          "taxDocument": {
+            "description": "CPF do titular da conta.",
+            "type": "string",
+            "example": "927.228.895-95"
+          },
+          "phone": {
+            "description": "Número do telefone residencial ou comercial.",
+            "type": "string",
+            "example": "(79) 2946-7954"
+          },
+          "mobile": {
+            "description": "Número do telefone móvel.",
+            "type": "string",
+            "example": "(79) 98827-7241"
+          },
+          "createdAt": {
+            "description": "Data e hora da finalização do cadastro.",
+            "type": "string",
+            "example": "2018-04-12T11:45:50.9486932-03:00"
+          },
+          "company": {
+            "description": "Informações da empresa.",
+            "type": "object",
+            "properties": {
+              "tradeName": {
+                "description": "Nome comercial da empresa (nome fantasia).",
+                "type": "string",
+                "example": "Esportes ME"
+              },
+              "fullName": {
+                "description": "Nome de registro da empresa (razão social).",
+                "type": "string",
+                "example": "Mariana e Emanuelly Esportes ME"
+              },
+              "taxDocument": {
+                "description": "CNPJ da empresa.",
+                "type": "string",
+                "example": "94.467.995/0001-49"
+              }
+            }
+          }
+        }
+      },
+      "holderWhoami": {
+        "description": "Informações pessoais do titular da conta e de sua empresa.",
+        "type": "object",
+        "properties": {
+          "id": {
+            "description": "Identificador único gerado automaticamente após o cadastro.",
+            "type": "string",
+            "example": "Br"
+          },
+          "fullName": {
+            "description": "Nome completo do titular.",
+            "type": "string",
+            "example": "João Mateus dos Santos"
+          },
+          "email": {
+            "description": "E-mail do titular.",
+            "type": "string",
+            "example": "joao@email.com"
+          },
+          "taxDocument": {
+            "description": "CPF do titular ou representante da empresa.",
+            "type": "string",
+            "example": "123.123.123-87"
+          },
+          "createdAt": {
+            "description": "Data e hora da finalização do cadastro.",
+            "type": "string",
+            "example": "2018-04-12T11:45:50.9486932-03:00"
+          },
+          "company": {
+            "description": "Informações da empresa.",
+            "type": "object",
+            "properties": {
+              "tradeName": {
+                "description": "Nome comercial da empresa (nome fantasia).",
+                "type": "string",
+                "example": "Esportes ME"
+              },
+              "fullName": {
+                "description": "Nome de registro da empresa (razão social).",
+                "type": "string",
+                "example": "Mariana e Emanuelly Esportes ME"
+              },
+              "taxDocument": {
+                "description": "CNPJ da empresa.",
+                "type": "string",
+                "example": "94.467.995/0001-49"
+              }
+            }
+          }
+        }
+      },
+      "application": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "description": "Identificador único gerado automaticamente.",
+            "type": "string",
+            "example": "A5"
+          },
+          "name": {
+            "description": "Nome da aplicação",
+            "type": "string",
+            "example": "Intranet"
+          },
+          "active": {
+            "description": "Indica se a aplicação está ou não ativa.",
+            "type": "boolean",
+            "example": true
+          },
+          "createdAt": {
+            "description": "Data em que a aplicação foi criada.",
+            "type": "string",
+            "example": "2018-03-13T13:50:53.29"
+          },
+          "releasedAt": {
+            "description": "Data de homologação da aplicação. Se este parâmetro apresentar o valor **null**, isto indica que o aplicativo ainda não foi homologado e não terá permissão no ambiente de produção.",
+            "type": "string",
+            "example": "2018-03-20T14:15:23.72"
+          },
+          "partner": {
+            "type": "object",
+            "description": "Informações sobre o parceiro.",
+            "properties": {
+              "id": {
+                "description": "Identificador único gerado automaticamente após o cadastro.",
+                "type": "string",
+                "example": "nR"
+              },
+              "fullName": {
+                "description": "Nome completo do parceiro.",
+                "type": "string",
+                "example": "M.J.M. Software"
+              }
+            }
+          }
+        }
+      },
+      "user": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "description": "Identificador único gerado automaticamente.",
+            "type": "string",
+            "example": "Br"
+          },
+          "email": {
+            "description": "E-mail utilizado para autenticação.",
+            "type": "string",
+            "example": "joao@email.com"
+          },
+          "fullName": {
+            "description": "Nome completo do usuário.",
+            "type": "string",
+            "example": "João Mateus dos Santos"
+          },
+          "taxDocument": {
+            "description": "CPF do usuário.",
+            "type": "string",
+            "example": "123.123.123-87"
+          },
+          "active": {
+            "description": "Informa se o usuário está ativo ou não. Se o usuário estiver inativo seu acesso está bloqueado.",
+            "type": "boolean",
+            "example": true
+          },
+          "createdAt": {
+            "description": "Data e hora em que o usuário foi criado.",
+            "type": "string",
+            "example": "2018-04-10T14:14:20.1394168"
+          },
+          "role": {
+            "description": "Informações sobre o perfil do usuário. O titular da conta não possui perfil.",
+            "allOf": [
+              {
+                "$ref": "#/definitions/accountAPI/role"
+              }
+            ]
+          }
+        }
+      },
+      "responsePagination": {
+        "errorPagination": {
+          "type": "object",
+          "properties": {
+            "errors": {
+              "description": "Lista dos possíveis erros",
+              "type": "array",
+              "xml": {
+                "name": "errors",
+                "wrapped": true
+              },
+              "items": {
+                "$ref": "#/definitions/accountAPI/responsePagination/errors"
+              }
+            }
+          }
+        },
+        "errors": {
+          "description": "Lista contendo alguns erros.",
+          "type": "string",
+          "example": "index: Required.\", \n\"length: Between 1 and 50."
+        }
+      },
+      "scopes": {
+        "description": "Permissões que serão concedidas ao perfil do usuário.",
+        "type": "string",
+        "example": "account.users.edit\", \n\"account.users.readonly"
+      },
+      "Scopes": {
+        "description": "Permissões que serão removidas do perfil do usuário.",
+        "type": "string",
+        "example": "account.users.edit\", \n\"account.users.readonly"
+      },
+      "accountHolder": {
+        "type": "object",
+        "required": [
+          "businessActivityId",
+          "transferPlan"
+        ],
+        "properties": {
+          "holder": {
+            "description": "Informações pessoais do titular da conta e de sua empresa.",
+            "type": "object",
+            "required": [
+              "fullName",
+              "gender",
+              "birthDate",
+              "mobile",
+              "taxDocument"
+            ],
+            "properties": {
+              "fullName": {
+                "description": "Nome completo do titular da conta.",
+                "type": "string",
+                "pattern": "Este parâmetro aceita somente letras",
+                "maxLength": 120,
+                "example": "Valentina Santos"
+              },
+              "birthDate": {
+                "description": "Data de nascimento.",
+                "type": "string",
+                "pattern": "YYYY-MM-DD",
+                "example": "1995-01-18"
+              },
+              "gender": {
+                "description": "`F` - Feminino, `M` - Masculino, `O` - Outros.",
+                "type": "char",
+                "example": "F"
+              },
+              "taxDocument": {
+                "description": "CPF do titular da conta.",
+                "type": "string",
+                "pattern": "Ex: 000.000.000-00",
+                "maxLength": 14,
+                "example": "927.228.895-95"
+              },
+              "phone": {
+                "description": "Número do telefone residencial ou comercial.",
+                "type": "string",
+                "pattern": "Ex: (00) 0000-0000",
+                "maxLength": 15,
+                "example": "(79) 2946-7954"
+              },
+              "mobile": {
+                "description": "Número do telefone móvel.",
+                "type": "string",
+                "pattern": "Ex: (00) 00000-0000",
+                "maxLength": 15,
+                "example": "(79) 98827-7241"
+              },
+              "company": {
+                "description": "Informações da empresa.",
+                "type": "object",
+                "required": [
+                  "fullName",
+                  "tradeName",
+                  "taxDocument",
+                  "businessTypeId"
+                ],
+                "properties": {
+                  "tradeName": {
+                    "description": "Nome comercial da empresa (nome fantasia).",
+                    "type": "string",
+                    "maxLength": 120,
+                    "example": "Esportes ME"
+                  },
+                  "fullName": {
+                    "description": "Nome de registro da empresa (razão social).",
+                    "type": "string",
+                    "maxLength": 120,
+                    "example": "Mariana e Emanuelly Esportes ME"
+                  },
+                  "taxDocument": {
+                    "description": "CNPJ da empresa.",
+                    "type": "string",
+                    "pattern": "Ex: 00.000.000/0000-00",
+                    "maxLength": 18,
+                    "example": "94.467.995/0001-49"
+                  },
+                  "businessTypeId": {
+                    "description": "Identificação do tipo de empresa (MEI, SA, LTDA, entre outros). Para encontrar esse ID, basta consultar nosso método [Consultar Tipo de Empresa](#operation/consultar-tipo-de-empresa).",
+                    "type": "string",
+                    "maxLength": 20,
+                    "example": "vL"
+                  }
+                }
+              }
+            }
+          },
+          "address": {
+            "description": "Endereço comercial.",
+            "type": "object",
+            "required": [
+              "line1",
+              "cityCode",
+              "zipCode",
+              "district",
+              "streetNumber"
+            ],
+            "properties": {
+              "cityCode": {
+                "description": "Código da cidade de acordo com o IBGE.",
+                "type": "string",
+                "pattern": "Este parâmetro aceita somente números",
+                "maxLength": 10,
+                "example": "2800308"
+              },
+              "district": {
+                "description": "Bairro.",
+                "type": "string",
+                "pattern": "Este parâmetro não aceita caracteres especiais",
+                "maxLength": 50,
+                "example": "Inacio Barbosa"
+              },
+              "line1": {
+                "description": "Endereço (rua, avenida, travessa, etc.).",
+                "type": "string",
+                "pattern": "Este parâmetro não aceita caracteres especiais",
+                "maxLength": 150,
+                "example": "R Manoel De Oliveira Martins"
+              },
+              "line2": {
+                "description": "Complemento do endereço.",
+                "type": "string",
+                "maxLength": 80,
+                "example": "Ap 001, Cleveland House"
+              },
+              "streetNumber": {
+                "description": "Número da residência.",
+                "type": "string",
+                "maxLength": 20,
+                "example": "229"
+              },
+              "zipCode": {
+                "description": "CEP - Código de Endereçamento Postal.",
+                "type": "string",
+                "pattern": "Ex: 00000-000",
+                "maxLength": 9,
+                "example": "49040-830"
+              }
+            }
+          },
+          "bankAccount": {
+            "description": "Informações bancárias.",
+            "type": "object",
+            "required": [
+              "type",
+              "accountNumber",
+              "bankBranchNumber",
+              "bankNumber",
+              "isJuristic"
+            ],
+            "properties": {
+              "isJuristic": {
+                "description": "Informar se a conta bancária é jurídica (`true`) ou física (`false`).",
+                "type": "boolean",
+                "example": false
+              },
+              "bankNumber": {
+                "description": "Número identificador da instituição financeira. Para encontrar esse número, basta consultar nosso método [Consultar Banco](#operation/consultar-bancos).",
+                "type": "string",
+                "pattern": "Este parâmetro aceita somente números",
+                "maxLength": 20,
+                "example": "001"
+              },
+              "accountNumber": {
+                "description": "Número da conta bancária.",
+                "type": "string",
+                "maxLength": 30,
+                "example": "123456-78"
+              },
+              "bankBranchNumber": {
+                "description": "Número da agência bancária.",
+                "type": "string",
+                "maxLength": 20,
+                "example": "1234-5"
+              },
+              "variation": {
+                "description": "Variação da conta. O número de variação existe apenas em algumas contas poupança.",
+                "pattern": "Este parâmetro aceita somente números",
+                "maxLength": 8,
+                "example": null
+              },
+              "type": {
+                "description": "Tipo de conta: `corrente` ou `poupanca`.",
+                "type": "string",
+                "maxLength": 8,
+                "example": "corrente"
+              }
+            }
+          },
+          "user": {
+            "description": "Login e senha de acesso.",
+            "type": "object",
+            "required": [
+              "password",
+              "email"
+            ],
+            "properties": {
+              "email": {
+                "description": "E-mail utilizado para autenticação.",
+                "type": "string",
+                "pattern": "example@email.com",
+                "maxLength": 120,
+                "example": "valentina@email.com"
+              },
+              "password": {
+                "description": "Senha de acesso.",
+                "type": "string",
+                "minLength": 6,
+                "maxLength": 20,
+                "example": "95625845"
+              }
+            }
+          },
+          "businessActivityId": {
+            "description": "Identificação do ramo de atividade. Para encontrar esse ID, basta consultar nosso método [Consultar Ramo de atividade](#operation/consultar-ramo-de-atividade).",
+            "type": "string",
+            "maxLength": 20,
+            "example": "MA"
+          },
+          "marketingMediaId": {
+            "description": "Identificação de como o usuário conheceu a empresa. Para encontrar esse ID, basta consultar nosso método [Consultar Media de Marketing](#operation/consultar-marketing-media).",
+            "type": "string",
+            "maxLength": 20,
+            "example": "k5"
+          },
+          "transferPlan": {
+            "description": "Informações do plano de repasse.",
+            "type": "object",
+            "required": [
+              "days",
+              "anticipated"
+            ],
+            "properties": {
+              "days": {
+                "description": "Número de dias que o cliente deseja receber o repasse (2 ou 32 dias).",
+                "type": "number",
+                "example": 32
+              },
+              "anticipated": {
+                "description": "Informar se deseja o repasse antecipado (`true`) ou não (`false`). A antecipação somente é opcional para planos acima de 30 dias.",
+                "type": "boolean",
+                "example": true
+              }
+            }
+          }
+        }
+      },
+      "responseAccountHolder": {
+        "validAccountHolder": {
+          "type": "object",
+          "properties": {
+            "holder": {
+              "description": "Informações pessoais do titular da conta.",
+              "type": "object",
+              "properties": {
+                "id": {
+                  "description": "Identificador único gerado automaticamente após o cadastro.",
+                  "type": "string",
+                  "example": "nR"
+                },
+                "fullName": {
+                  "description": "Nome completo do titular da conta.",
+                  "type": "string",
+                  "example": "Valentina Santos"
+                },
+                "gender": {
+                  "description": "`F` - Feminino, `M` - Masculino, `O` - Outros.",
+                  "type": "char",
+                  "example": "F"
+                },
+                "taxDocument": {
+                  "description": "CPF do titular da conta.",
+                  "type": "string",
+                  "example": "927.228.895-95"
+                },
+                "email": {
+                  "description": "E-mail cadastrado para o titular da conta.",
+                  "type": "string",
+                  "example": "valentina@email.com"
+                },
+                "phone": {
+                  "description": "Número do telefone residencial ou comercial.",
+                  "type": "string",
+                  "example": "(79) 2946-7954"
+                },
+                "mobile": {
+                  "description": "Número do telefone móvel.",
+                  "type": "string",
+                  "example": "(79) 98827-7241"
+                },
+                "birthDate": {
+                  "description": "Data de nascimento.",
+                  "type": "string",
+                  "example": "1996-05-25T00:00:00"
+                },
+                "createdAt": {
+                  "description": "Data e hora da finalização do cadastro.",
+                  "type": "string",
+                  "example": "2018-04-12T11:45:50.9486932-03:00"
+                },
+                "blacklist": {
+                  "description": "Identifica se o cliente está na blacklist.",
+                  "type": "boolean",
+                  "example": false
+                },
+                "company": {
+                  "description": "Informações da empresa.",
+                  "type": "object",
+                  "properties": {
+                    "tradeName": {
+                      "description": "Nome comercial da empresa.",
+                      "type": "string",
+                      "example": "Esportes ME"
+                    },
+                    "fullName": {
+                      "description": "Nome completo da empresa.",
+                      "type": "string",
+                      "example": "Mariana e Emanuelly Esportes ME"
+                    },
+                    "taxDocument": {
+                      "description": "CNPJ da empresa.",
+                      "type": "string",
+                      "example": "94.467.995/0001-49"
+                    },
+                    "businessType": {
+                      "description": "Informações do tipo da empresa.",
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "description": "Identificador no tipo de empresa.",
+                          "type": "string",
+                          "example": "vL"
+                        },
+                        "name": {
+                          "description": "Nome do tipo de empresa.",
+                          "type": "string",
+                          "example": "Sociedade Empresária Limitada"
+                        },
+                        "acronym": {
+                          "description": "Sigla referente ao tipo de empresa.",
+                          "type": "string",
+                          "example": "LTDA"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "bankAccount": {
+              "description": "Informações bancárias.",
+              "type": "object",
+              "properties": {
+                "isJuristic": {
+                  "description": "Indica se a conta bancária é jurídica (`true`) ou física (`false`).",
+                  "type": "boolean",
+                  "example": false
+                },
+                "bankNumber": {
+                  "description": "Número identificador da instituição financeira.",
+                  "type": "string",
+                  "example": "001"
+                },
+                "bankName": {
+                  "description": "Nome da instituição financeira.",
+                  "type": "string",
+                  "example": "Banco do Brasil S.A."
+                },
+                "accountNumber": {
+                  "description": "Número da conta bancária.",
+                  "type": "string",
+                  "example": "123456-78"
+                },
+                "bankBranchNumber": {
+                  "description": "Número da agência bancária.",
+                  "type": "string",
+                  "example": "1234-5"
+                },
+                "variation": {
+                  "description": "Variação da conta. O número de variação existe apenas em algumas contas poupança.",
+                  "type": "string|null",
+                  "example": null
+                },
+                "type": {
+                  "description": "Tipo de conta: `corrente` ou `poupanca`.",
+                  "type": "string",
+                  "example": "corrente"
+                },
+                "holderFullName": {
+                  "description": "Nome do titular da conta bancária.",
+                  "type": "string",
+                  "example": "Valentina Santos"
+                },
+                "holderTaxDocument": {
+                  "description": "CPF/CNPJ do titular da conta bancária.",
+                  "type": "string",
+                  "example": "927.228.895-95"
+                }
+              }
+            },
+            "businessActivity": {
+              "description": "Informações da atividade comercial.",
+              "type": "object",
+              "properties": {
+                "id": {
+                  "description": "Identificação do ramo de atividade comercial.",
+                  "type": "string",
+                  "example": "Re"
+                },
+                "name": {
+                  "description": "Nome da atividade comercial.",
+                  "type": "string",
+                  "example": "Esporte e Lazer"
+                }
+              }
+            },
+            "address": {
+              "description": "Endereço comercial.",
+              "type": "object",
+              "properties": {
+                "district": {
+                  "description": "Bairro.",
+                  "type": "string",
+                  "example": "Inacio Barbosa"
+                },
+                "line1": {
+                  "description": "Endereço.",
+                  "type": "string",
+                  "example": "R Manoel De Oliveira Martins"
+                },
+                "line2": {
+                  "description": "Complemento do endereço.",
+                  "type": "string",
+                  "example": "Ap 001, Cleveland House"
+                },
+                "streetNumber": {
+                  "description": "Número da residência.",
+                  "type": "string",
+                  "example": "229"
+                },
+                "zipCode": {
+                  "description": "CEP - Código de Endereçamento Postal.",
+                  "type": "string",
+                  "example": "49040-830"
+                },
+                "city": {
+                  "description": "Informações da cidade.",
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "description": "Código da cidade de acordo com o IBGE.",
+                      "type": "string",
+                      "example": "2800308"
+                    },
+                    "name": {
+                      "description": "Noma da cidade.",
+                      "type": "string",
+                      "example": "Aracaju"
+                    },
+                    "state": {
+                      "description": "Sigla do estado.",
+                      "type": "string",
+                      "example": "SE"
+                    }
+                  }
+                }
+              }
+            },
+            "registrationOrigin": {
+              "description": "Informações de registro.",
+              "type": "object",
+              "properties": {
+                "ip": {
+                  "description": "Número do IP.",
+                  "type": "string",
+                  "example": "123.123.123.154"
+                },
+                "timeOnScreen": {
+                  "description": "Tempo para a realização do cadastro.",
+                  "type": "string|null",
+                  "example": null
+                },
+                "userAgent": {
+                  "description": "Software onde foi realizado o cadastro.",
+                  "type": "string",
+                  "example": "insomnia/5.15.0"
+                },
+                "device": {
+                  "description": "Dispotivo utilizado para a realização do cadastro.",
+                  "type": "string",
+                  "example": "Desktop"
+                },
+                "browser": {
+                  "description": "Navegador utilizado para a realização do cadastro.",
+                  "type": "string",
+                  "example": "Generic"
+                },
+                "platform": {
+                  "description": "Plataforma utilizada para a realização do cadastro.",
+                  "type": "string|null",
+                  "example": null
+                },
+                "engine": {
+                  "description": "Mecanismo utilizado para a realização do cadastro.",
+                  "type": "string|null",
+                  "example": null
+                },
+                "marketingMedia": {
+                  "description": "Informações a respeito da media social, que o Titular da conta foi informado sobre os serviços da Paggcerto.",
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "description": "Identificação da média social.",
+                      "type": "string",
+                      "example": "N9"
+                    },
+                    "name": {
+                      "description": "Nome da media social.",
+                      "type": "string",
+                      "example": "Instagram"
+                    }
+                  }
+                }
+              }
+            },
+            "account": {
+              "description": "Informações da conta.",
+              "type": "object",
+              "properties": {
+                "active": {
+                  "description": "Indica se a conta está ou não ativa.",
+                  "type": "boolean",
+                  "example": true
+                },
+                "saleOnline": {
+                  "description": "Indica se o titular da conta pode realizar pagamentos onliner (`true`) ou somente com a maquininha (`false`).",
+                  "type": "boolean",
+                  "example": true
+                },
+                "approved": {
+                  "description": "Indica se a conta está ou não aprovada.",
+                  "type": "boolean",
+                  "example": true
+                },
+                "freeTrial": {
+                  "description": "Indica se o usuário está ou não no período de avaliação. Após o término do período de avaliação, somente é possível utilizar a conta após sua aprovação.",
+                  "type": "boolean",
+                  "example": false
+                },
+                "balanceBlocked": {
+                  "description": "Indica se o saldo está bloqueado.",
+                  "type": "boolean",
+                  "example": false
+                },
+                "anticipatedTransfer": {
+                  "description": "Indica se o titular da conta pode realizar o repasse antecipado (`true`) ou não (`false`).",
+                  "type": "boolean",
+                  "example": false
+                },
+                "oldAnticipationPlan": {
+                  "description": "Indica se é o antigo plano de antecipação ou não.",
+                  "type": "boolean",
+                  "example": true
+                },
+                "vanBanese": {
+                  "description": "Código do contrato com o Banese - Banco do Estado de Sergipe. Caso o titular deseje realizar vendas com este cartão. ",
+                  "type": "number",
+                  "example": null
+                },
+                "comercialName": {
+                  "description": "Nome comercial.",
+                  "type": "string",
+                  "example": "Esporte e CIA"
+                },
+                "softdescriptor": {
+                  "description": "Nome que irá constar nas faturas dos clientes.",
+                  "type": "string",
+                  "example": "Esportes ME"
+                },
+                "transferPlan": {
+                  "description": "Informações do plano de repasse.",
+                  "type": "object",
+                  "properties": {
+                    "days": {
+                      "description": "Número de dias que o cliente deseja receber o repasse (2 ou 32 dias).",
+                      "type": "number",
+                      "example": 32
+                    },
+                    "anticipated": {
+                      "description": "Informa se o repasse será antecipado (`true`) ou não (`false`). A antecipação somente é opcional para planos acima de 30 dias.",
+                      "type": "boolean",
+                      "example": true
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "errorAccountHolder": {
+          "type": "object",
+          "properties": {
+            "errors": {
+              "type": "array",
+              "xml": {
+                "name": "Array<String>",
+                "wrapped": true
+              },
+              "items": {
+                "$ref": "#/definitions/accountAPI/responseAccountHolder/errors"
+              }
+            }
+          }
+        },
+        "errors": {
+          "description": "Lista contendo alguns erros.",
+          "type": "string",
+          "example": "user.email: Required.\", \n\"holder.gender: Required.\" , \n\"holder.gender: M|F|O\", \n\"address.cityCode: Required.\", \n\"bankAccount.bankNumber: Required."
+        },
+        "invalidAccountHolder": {
+          "type": "object",
+          "properties": {
+            "error": {
+              "description": "Especificação do erro.",
+              "type": "string",
+              "example": "EMAIL_ALREADY_TAKEN"
+            }
+          }
+        }
+      },
+      "configureHolder": {
+        "type": "object",
+        "required": [
+          "transferPlan",
+          "bankAccount",
+          "address",
+          "mobile"
+        ],
+        "properties": {
+          "password": {
+            "type": "string",
+            "description": "Senha do titular da conta.",
+            "format": "password",
+            "minLength": 6,
+            "maxLength": 20,
+            "example": "95238473"
+          },
+          "phone": {
+            "description": "Número do telefone residencial ou comercial.",
+            "type": "string",
+            "pattern": "Ex: (00) 0000-0000",
+            "example": "(79) 2946-7954"
+          },
+          "mobile": {
+            "description": "Número do telefone móvel.",
+            "type": "string",
+            "pattern":"Ex: (00) 00000-0000",
+            "example": "(79) 98827-7241"
+          },
+          "comercialName": {
+            "description": "Nome comercial.",
+            "type": "string",
+            "example": "Esporte e CIA"
+          },
+          "softdescriptor": {
+            "description": "Nome que irá constar nas faturas dos clientes.",
+            "type": "string",
+            "maxLength": 13,
+            "pattern": "Este parâmetro não aceita caracteres especiais",
+            "example": "Esportes ME"
+          },
+          "transferPlan": {
+            "description": "Informações do plano de repasse.",
+            "type": "object",
+            "required": [
+              "days",
+              "anticipated"
+            ],
+            "properties": {
+              "days": {
+                "description": "Número de dias que o cliente deseja receber o repasse (2 ou 32 dias).",
+                "type": "number",
+                "example": 32
+              },
+              "anticipated": {
+                "description": "Informar se deseja o repasse antecipado (`true`) ou não (`false`). A antecipação somente é opcional para planos acima de 30 dias.",
+                "type": "boolean",
+                "example": true
+              },
+              "migrate":{
+                "description": "Informar se o plano foi migrado do plano antigo para o novo plano (`true`) ou não (`false`).",
+                "type": "boolean",
+                "example": true
+              }
+            }
+          },
+          "bankAccount": {
+            "description": "Informações bancárias.",
+            "type": "object",
+            "required": [
+              "type",
+              "accountNumber",
+              "bankBranchNumber",
+              "bankNumber",
+              "isJuristic"
+            ],
+            "properties": {
+              "bankNumber": {
+                "description": "Número identificador da instituição financeira. Para encontrar esse número, basta consultar nosso método [Consultar Banco](#operation/consultar-bancos).",
+                "type": "string",
+                "pattern": "Este parâmetro aceita somente números",
+                "maxLength": 20,
+                "example": "104"
+              },
+              "accountNumber": {
+                "description": "Número da conta bancária.",
+                "type": "string",
+                "maxLength": 30,
+                "example": "02857254642-5"
+              },
+              "bankBranchNumber": {
+                "description": "Número da agência bancária.",
+                "type": "string",
+                "maxLength": 20,
+                "example": "1500-1"
+              },
+              "variation": {
+                "description": "Variação da conta. O número de variação existe apenas em algumas contas poupança.",
+                "pattern": "Este parâmetro aceita somente números",
+                "maxLength": 8,
+                "example": null
+              },
+              "type": {
+                "description": "Tipo de conta: corrente ou poupança.",
+                "type": "string",
+                "maxLength": 8,
+                "example": "corrente"
+              },
+              "isJuristic": {
+                "description": "Informar se a conta bancária é jurídica (`true`) ou física (`false`).",
+                "type": "boolean",
+                "example": false
+              }
+            }
+          },         
+          "address": {
+            "description": "Endereço comercial.",
+            "type": "object",
+            "required": [
+              "line1",
+              "cityCode",
+              "zipCode",
+              "district",
+              "streetNumber"
+            ],
+            "properties": {
+              "cityCode": {
+                "description": "Código da cidade de acordo com o IBGE.",
+                "type": "string",
+                "pattern": "Este parâmetro aceita somente números",
+                "maxLength": 10,
+                "example": "2800308"
+              },
+              "district": {
+                "description": "Bairro.",
+                "type": "string",
+                "pattern": "Este parâmetro não aceita caracteres especiais",
+                "maxLength": 50,
+                "example": "Inacio Barbosa"
+              },
+              "line1": {
+                "description": "Endereço (rua, avenida, travessa, etc.).",
+                "type": "string",
+                "pattern": "Este parâmetro não aceita caracteres especiais",
+                "maxLength": 150,
+                "example": "R Manoel De Oliveira Martins"
+              },
+              "line2": {
+                "description": "Complemento do endereço.",
+                "type": "string",
+                "maxLength": 80,
+                "example": "Ap 001, Cleveland House"
+              },
+              "streetNumber": {
+                "description": "Número da residência.",
+                "type": "string",
+                "maxLength": 20,
+                "example": "229"
+              },
+              "zipCode": {
+                "description": "CEP - Código de Endereçamento Postal.",
+                "type": "string",
+                "pattern": "Ex: 00000-000",
+                "maxLength": 9,
+                "example": "49040-830"
+              }
+            }
+          }
+        }
+      },
+      "responseConfigureHolder": {
+        "validConfigureHolder": {
+          "type": "object",
+          "properties": {
+            "holder": {
+              "description": "Informações pessoais do titular da conta.",
+              "type": "object",
+              "properties": {
+                "id": {
+                  "description": "Identificador único gerado automaticamente após o cadastro.",
+                  "type": "string",
+                  "example": "nR"
+                },
+                "fullName": {
+                  "description": "Nome completo do titular da conta.",
+                  "type": "string",
+                  "example": "Valentina Santos"
+                },
+                "gender": {
+                  "description": "`F` - Feminino, `M` - Masculino, `O` - Outros.",
+                  "type": "char",
+                  "example": "F"
+                },
+                "taxDocument": {
+                  "description": "CPF do titular da conta.",
+                  "type": "string",
+                  "example": "927.228.895-95"
+                },
+                "email": {
+                  "description": "E-mail cadastrado para o titular da conta.",
+                  "type": "string",
+                  "example": "valentina@email.com"
+                },
+                "phone": {
+                  "description": "Número do telefone residencial ou comercial.",
+                  "type": "string",
+                  "example": "(79) 2946-7954"
+                },
+                "mobile": {
+                  "description": "Número do telefone móvel.",
+                  "type": "string",
+                  "example": "(79) 98827-7241"
+                },
+                "birthDate": {
+                  "description": "Data de nascimento.",
+                  "type": "string",
+                  "example": "1996-05-25T00:00:00"
+                },
+                "createdAt": {
+                  "description": "Data e hora da finalização do cadastro.",
+                  "type": "string",
+                  "example": "2018-04-12T11:45:50.9486932-03:00"
+                },
+                "company": {
+                  "description": "Informações da empresa.",
+                  "type": "object",
+                  "properties": {
+                    "tradeName": {
+                      "description": "Nome comercial da empresa.",
+                      "type": "string",
+                      "example": "Esportes ME"
+                    },
+                    "fullName": {
+                      "description": "Nome completo da empresa.",
+                      "type": "string",
+                      "example": "Mariana e Emanuelly Esportes ME"
+                    },
+                    "taxDocument": {
+                      "description": "CNPJ da empresa.",
+                      "type": "string",
+                      "example": "94.467.995/0001-49"
+                    }
+                  }
+                }
+              }
+            },
+            "account": {
+              "description": "Informações da conta.",
+              "type": "object",
+              "properties": {
+                "active": {
+                  "description": "Indica se a conta está ou não ativa.",
+                  "type": "boolean",
+                  "example": true
+                },
+                "approved": {
+                  "description": "Indica se a conta está ou não aprovada.",
+                  "type": "boolean",
+                  "example": true
+                },
+                "freeTrial": {
+                  "description": "Indica se o usuário está ou não no período de avaliação. Após o término do período de avaliação, somente é possível utilizar a conta após sua aprovação.",
+                  "type": "boolean",
+                  "example": false
+                },
+                "balanceBlocked": {
+                  "description": "Indica se o saldo está bloqueado.",
+                  "type": "boolean",
+                  "example": false
+                },
+                "oldAnticipationPlan": {
+                  "description": "Indica se é o antigo plano de antecipação ou não.",
+                  "type": "boolean",
+                  "example": true
+                },
+                "vanBanese": {
+                  "description": "Código do contrato com o Banese - Banco do Estado de Sergipe. Caso o titular deseje realizar vendas com este cartão. ",
+                  "type": "number",
+                  "example": null
+                },
+                "softdescriptor": {
+                  "description": "Nome que irá constar nas faturas dos clientes.",
+                  "type": "string",
+                  "example": "Esportes ME"
+                },
+                "saleOnline":{
+                  "description": "Indica se o titular da conta pode realizar pagamentos onliner (`true`) ou somente com a maquininha (`false`).",
+                  "type": "boolean",
+                  "example": true
+                },
+                "comercialName": {
+                  "description": "Nome comercial.",
+                  "type": "string",
+                  "example": "Esporte e CIA"
+                },
+                "transferPlan": {
+                  "description": "Informações do plano de repasse.",
+                  "type": "object",
+                  "properties": {
+                    "days": {
+                      "description": "Número de dias que o cliente deseja receber o repasse (2 ou 32 dias).",
+                      "type": "number",
+                      "example": 32
+                    },
+                    "anticipated": {
+                      "description": "Informa se o repasse será antecipado (`true`) ou não (`false`). A antecipação somente é opcional para planos acima de 30 dias.",
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "oldPlan":{
+                      "description": "Informa se o plano é plano antigo (`true`) ou se é novo plano (`false`).",
+                      "type": "boolean",
+                      "example": true
+                    }
+                  }
+                }
+              }
+            },
+            "bankAccount": {
+              "description": "Informações bancárias.",
+              "type": "object",
+              "properties": {
+                "isJuristic": {
+                  "description": "Indica se a conta bancária é jurídica (`true`) ou física (`false`).",
+                  "type": "boolean",
+                  "example": false
+                },
+                "bankNumber": {
+                  "description": "Número identificador da instituição financeira.",
+                  "type": "string",
+                  "example": "001"
+                },
+                "bankName": {
+                  "description": "Nome da instituição financeira.",
+                  "type": "string",
+                  "example": "Banco do Brasil S.A."
+                },
+                "accountNumber": {
+                  "description": "Número da conta bancária.",
+                  "type": "string",
+                  "example": "123456-78"
+                },
+                "bankBranchNumber": {
+                  "description": "Número da agência bancária.",
+                  "type": "string",
+                  "example": "1234-5"
+                },
+                "variation": {
+                  "description": "Variação da conta. O número de variação existe apenas em algumas contas poupança.",
+                  "type": "string|null",
+                  "example": null
+                },
+                "type": {
+                  "description": "Tipo de conta: `corrente` ou `poupanca`.",
+                  "type": "string",
+                  "example": "corrente"
+                },
+                "holderFullName": {
+                  "description": "Nome do titular da conta bancária.",
+                  "type": "string",
+                  "example": "Valentina Santos"
+                },
+                "holderTaxDocument": {
+                  "description": "CPF/CNPJ do titular da conta bancária.",
+                  "type": "string",
+                  "example": "927.228.895-95"
+                }
+              }
+            },
+            "address": {
+              "description": "Endereço comercial.",
+              "type": "object",
+              "properties": {
+                "district": {
+                  "description": "Bairro.",
+                  "type": "string",
+                  "example": "Inacio Barbosa"
+                },
+                "line1": {
+                  "description": "Endereço.",
+                  "type": "string",
+                  "example": "R Manoel De Oliveira Martins"
+                },
+                "line2": {
+                  "description": "Complemento do endereço.",
+                  "type": "string",
+                  "example": "Ap 001, Cleveland House"
+                },
+                "streetNumber": {
+                  "description": "Número da residência.",
+                  "type": "string",
+                  "example": "229"
+                },
+                "zipCode": {
+                  "description": "CEP - Código de Endereçamento Postal.",
+                  "type": "string",
+                  "example": "49040-830"
+                },
+                "city": {
+                  "description": "Informações da cidade.",
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "description": "Código da cidade de acordo com o IBGE.",
+                      "type": "string",
+                      "example": "2800308"
+                    },
+                    "name": {
+                      "description": "Noma da cidade.",
+                      "type": "string",
+                      "example": "Aracaju"
+                    },
+                    "state": {
+                      "description": "Sigla do estado.",
+                      "type": "string",
+                      "example": "SE"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "errorConfigureHolder": {
+          "type": "object",
+          "properties": {
+            "errors": {
+              "type": "array",
+              "xml": {
+                "name": "Array<String>",
+                "wrapped": true
+              },
+              "items": {
+                "$ref": "#/definitions/accountAPI/responseConfigureHolder/errors"
+              }
+            }
+          }
+        },
+        "errors": {
+          "description": "Lista contendo alguns erros.",
+          "type": "string",
+          "example": "address.cityCode: Required.\", \n\"bankAccount.bankNumber: Required."
+        },
+        "invalidConfigureHolder": {
+          "type": "object",
+          "properties": {
+            "error": {
+              "description": "Especificação do erro.",
+              "type": "string",
+              "example": "CITY_NOT_FOUND"
+            }
+          }
+        }
+      },
+      "ComplementaryMethods": {
+        "responseBusinessActivities": {
+          "type": "object",
+          "properties": {
+            "businessActivities": {
+              "type": "array",
+              "description": "Lista dos ramos de atividades.",
+              "xml": {
+                "name": "users",
+                "wrapped": true
+              },
+              "items": {
+                "$ref": "#/definitions/accountAPI/ComplementaryMethods/businessActivities"
+              }
+            }
+          }
+        },
+        "businessActivities": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "description": "Identificador único do ramo de atividade. Este ID será utilizado no parâmetro [businessActivityId](#operation/conta-titular).",
+              "type": "string",
+              "example": "Re"
+            },
+            "name": {
+              "description": "Nome do ramo de atividade.",
+              "type": "string",
+              "example": "Esporte e Lazer"
+            }
+          }
+        },
+        "responseBusinessTypes": {
+          "type": "object",
+          "properties": {
+            "businessTypes": {
+              "type": "array",
+              "description": "Lista dos tipos de empresas.",
+              "xml": {
+                "name": "users",
+                "wrapped": true
+              },
+              "items": {
+                "$ref": "#/definitions/accountAPI/ComplementaryMethods/businessTypes"
+              }
+            }
+          }
+        },
+        "businessTypes": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "description": "Identificador único do tipo de empresa. Este ID será utilizado no parâmetro [businessTypeId](#operation/conta-titular).",
+              "type": "string",
+              "example": "vL"
+            },
+            "name": {
+              "description": "Nome do tipo de empresa.",
+              "type": "string",
+              "example": "Sociedade Empresária Limitada"
+            },
+            "acronym": {
+              "description": "Sigla referente ao tipo de empresa.",
+              "type": "string",
+              "example": "LTDA"
+            }
+          }
+        },
+        "responseMarketingMedias": {
+          "type": "object",
+          "properties": {
+            "marketingMedias": {
+              "type": "array",
+              "description": "Lista das medias de marketing.",
+              "xml": {
+                "name": "users",
+                "wrapped": true
+              },
+              "items": {
+                "$ref": "#/definitions/accountAPI/ComplementaryMethods/marketingMedias"
+              }
+            }
+          }
+        },
+        "marketingMedias": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "description": "Identificador único da media de marketing. Este ID será utilizado no parâmetro [marketingMediaId](#operation/conta-titular).",
+              "type": "string",
+              "example": "N9"
+            },
+            "name": {
+              "description": "Nome da media.",
+              "type": "string",
+              "example": "Instagram"
+            }
+          }
+        },
+        "banks": {
+          "type": "object",
+          "properties": {
+            "number": {
+              "description": "Número identificador da instituição financeira, este número é único. Este ID será utilizado no parâmetro [bankNumber](#operation/conta-titular).",
+              "type": "string",
+              "example": "001"
+            },
+            "name": {
+              "description": "Nome da instituição financeira.",
+              "type": "string",
+              "example": "Banco do Brasil S.A."
+            }
+          }
+        },
+        "responseBanks": {
+          "type": "object",
+          "properties": {
+            "banks": {
+              "description": "Lista dos bancos.",
+              "type": "array",
+              "xml": {
+                "name": "banks",
+                "wrapped": true
+              },
+              "items": {
+                "$ref": "#/definitions/accountAPI/ComplementaryMethods/banks"
+              }
+            }
+          }
+        },
+        "city": {
+          "type": "object",
+          "properties": {
+            "code": {
+              "description": "Código da cidade de acordo com o IBGE",
+              "type": "string",
+              "example": "2800308"
+            },
+            "name": {
+              "description": "Noma da cidade.",
+              "type": "string",
+              "example": "Aracaju"
+            },
+            "state": {
+              "description": "Sigla do estado.",
+              "type": "string",
+              "example": "SE"
+            }
+          }
+        },
+        "responseCity": {
+          "type": "object",
+          "properties": {
+            "cities": {
+              "description": "Lista das cidades.",
+              "type": "array",
+              "xml": {
+                "name": "cities",
+                "wrapped": true
+              },
+              "items": {
+                "$ref": "#/definitions/accountAPI/ComplementaryMethods/city"
+              }
+            }
+          }
+        }
+      },
+      "authenticate": {
+        "type": "object",
+        "required": [
+          "login",
+          "password"
+        ],
+        "properties": {
+          "login": {
+            "description": "O login do usuário é seu endereço de e-mail.",
+            "required": true,
+            "type": "string",
+            "pattern": "example@email.com",
+            "maxLength": 120,
+            "example": "valentina@email.com"
+          },
+          "password": {
+            "type": "string",
+            "description": "Senha do usuário.",
+            "format": "password",
+            "minLength": 6,
+            "maxLength": 20,
+            "example": "95625845"
+          }
+        }
+      },
+      "responseAuthenticate": {
+        "validAuthenticate": {
+          "type": "object",
+          "properties": {
+            "token": {
+              "description": "Token para identificar o usuário.",
+              "type": "string",
+              "example": "1mZ1edKKACtPAb7zGlwSzv.s72PvhAbGmB8K1ZrGxpcNM"
+            }
+          }
+        },
+        "errorAuthenticate": {
+          "type": "object",
+          "properties": {
+            "errors": {
+              "type": "array",
+              "xml": {
+                "name": "Array<String>",
+                "wrapped": true
+              },
+              "items": {
+                "$ref": "#/definitions/accountAPI/responseAuthenticate/errors"
+              }
+            }
+          }
+        },
+        "errors": {
+          "description": "Lista contendo alguns erros.",
+          "type": "string",
+          "example": "password: Required.\", \n\"login: Required."
+        }
+      },
+      "authenticateHash": {
+        "type": "object",
+        "properties": {
+          "token": {
+            "description": "Token temporário.",
+            "type": "string",
+            "example": "Ehjikkja585569779efwrf.ihuheyvvc872622791ndbdehv"
+          }
+        }
+      },
+      "responseAuthenticateHash": {
+        "invalidAuthenticateHash": {
+          "type": "object",
+          "properties": {
+            "error": {
+              "description": "Especificação do erro.",
+              "type": "string",
+              "example": "INVALID_HASH"
+            }
+          }
+        }
+      },
+      "responseWhoami": {
+        "validWhoami": {
+          "type": "object",
+          "properties": {
+            "application": {
+              "description": "Dados da aplicação.",
+              "allOf": [
+                {
+                  "$ref": "#/definitions/accountAPI/application"
+                }
+              ]
+            },
+            "holder": {
+              "description": "Dados do titular da conta.",
+              "allOf": [
+                {
+                  "$ref": "#/definitions/accountAPI/holderWhoami"
+                }
+              ]
+            },
+            "account": {
+              "description": "Informações da conta.",
+              "type": "object",
+              "properties": {
+                "transferPlan": {
+                  "description": "Informações do plano de repasse.",
+                  "type": "object",
+                  "properties": {
+                    "days": {
+                      "description": "Número de dias que o cliente deseja receber o repasse (2 ou 32 dias).",
+                      "type": "number",
+                      "example": 32
+                    },
+                    "anticipated": {
+                      "description": "Informa se o repasse será antecipado (`true`) ou não (`false`). A antecipação somente é opcional para planos acima de 30 dias.",
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "migrate":{
+                      "description": "Informa se o plano será migrado do plano antigo para o novo plano (`true`) ou se permancerá o plano antigo (`false`).",
+                      "type": "boolean",
+                      "example": true
+                    }
+                  }
+                },
+                "active": {
+                  "description": "Indica se a conta está ou não ativa.",
+                  "type": "boolean",
+                  "example": true
+                },
+                "approved": {
+                  "description": "Indica se a conta está ou não aprovada.",
+                  "type": "boolean",
+                  "example": true
+                },
+                "freeTrial": {
+                  "description": "Indica se o usuário está ou não no período de avaliação. Após o término do período de avaliação, somente é possível utilizar a conta após sua aprovação.",
+                  "type": "boolean",
+                  "example": false
+                },
+                "balanceBlocked": {
+                  "description": "Indica se o saldo está bloqueado.",
+                  "type": "boolean",
+                  "example": false
+                },
+                "oldAnticipationPlan": {
+                  "description": "Indica se é o antigo plano de antecipação ou não.",
+                  "type": "boolean",
+                  "example": true
+                },
+                "vanBanese": {
+                  "description": "Código do contrato com o Banese - Banco do Estado de Sergipe. Caso o titular deseje realizar vendas com este cartão. ",
+                  "type": "number",
+                  "example": null
+                },
+                "softdescriptor": {
+                  "description": "Nome que irá constar nas faturas dos clientes.",
+                  "type": "string",
+                  "example": "Esportes ME"
+                },
+                "saleOnline":{
+                  "description": "Indica se o titular da conta pode realizar pagamentos onliner (`true`) ou somente com a maquininha (`false`).",
+                  "type": "boolean",
+                  "example": true
+                }
+              }
+            },
+            "user": {
+              "description": "Dados do usuário.",
+              "type": "object",
+              "properties": {
+                "id": {
+                  "description": "Identificador único gerado automaticamente.",
+                  "type": "string",
+                  "example": "Br"
+                },
+                "email": {
+                  "description": "E-mail utilizado para autenticação.",
+                  "type": "string",
+                  "example": "joao@email.com"
+                },
+                "fullName": {
+                  "description": "Nome completo do usuário.",
+                  "type": "string",
+                  "example": "João Mateus dos Santos"
+                },
+                "taxDocument": {
+                  "description": "CPF do usuário.",
+                  "type": "string",
+                  "example": "123.123.123-87"
+                },
+                "active": {
+                  "description": "Informa se o usuário está ativo ou não. Se o usuário estiver inativo seu acesso está bloqueado.",
+                  "type": "boolean",
+                  "example": true
+                },
+                "createdAt": {
+                  "description": "Data e hora em que o usuário foi criado.",
+                  "type": "string",
+                  "example": "2018-04-10T14:14:20.1394168"
+                },
+                "role": {
+                  "description": "Informações sobre o perfil do usuário. O titular da conta não possui perfil.",
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "description": "Identificador único gerado automaticamente após o cadastro.",
+                      "type": "string",
+                      "example": "x9"
+                    },
+                    "name": {
+                      "description": "Nome do perfil do usuário.",
+                      "type": "string",
+                      "example": "Gerente financeiro"
+                    },
+                    "active": {
+                      "description": "Informa se o perfil está ativo ou não. Os usuários associados a um perfil inativo terão seu acesso bloqueado.",
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "createdAt": {
+                      "description": "Data e hora em que o perfil foi criado.",
+                      "type": "string",
+                      "example": "2018-04-10T14:14:20.1394168"
+                    },
+                    "scopes": {
+                      "description": "Lista com as permissões concedidas ao perfil.",
+                      "type": "array<string>",
+                      "example": [
+                        "resource-one.example.readonly",
+                        "resource-two.example.readonly",
+                        "resource-three.example.edit"
+                      ]
+                    }
+                  }
+                }
+              }
+            },
+            "scope": {
+              "description": "Escopo exigido para acessar um determinado recurso do serviço.",
+              "type": "string",
+              "example": "resource-one.example.readonly"
+            },
+            "accessGranted": {
+              "description": "Identica se o usuário tem permissão para acessar um recurso para um determinado serviço considerando:\n 1.  Aplicativo está ativo e homologado;\n 2.  O parceiro que desenvolveu o aplicativo contratou o serviço solicitado;\n 3.  A conta está ativa;\n 4.  Usuário está ativo e associado a um perfil que também está ativo e possui a permissão exigida.",
+              "type": "boolean",
+              "example": true
+            },
+            "accessedByHolder": {
+              "description": "Identifica se o usuário é o titular da conta.",
+              "type": "boolean",
+              "example": true
+            }
+          }
+        }
+      },
+      "Role": {
+        "createRole": {
+          "type": "object",
+          "required": [
+            "name"
+          ],
+          "properties": {
+            "name": {
+              "description": "Nome do perfil.",
+              "type": "string",
+              "pattern": "Este parâmetro aceita somente letras",
+              "maxLength": 80,
+              "example": "Gerente Financeiro"
+            }
+          }
+        },
+        "responseCreateRole": {
+          "validCreateRole": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "description": "Identificador único gerado automaticamente após o cadastro.",
+                "type": "string",
+                "example": "x9"
+              },
+              "name": {
+                "description": "Nome do perfil.",
+                "type": "string",
+                "example": "Gerente Financeiro"
+              },
+              "active": {
+                "description": "Informa se o perfil está ativo ou não.",
+                "type": "boolean",
+                "example": true
+              },
+              "createdAt": {
+                "description": "Data e hora em que o perfil foi criado.",
+                "type": "string",
+                "example": "2018-04-17T17:38:40.9565295-03:00"
+              },
+              "totalUsers": {
+                "description": "Total de usuários que estão vinculados a este perfil.",
+                "type": "number",
+                "example": 0
+              },
+              "scopes": {
+                "description": "Lista com as permissões concedidas ao perfil.",
+                "type": "array<string>",
+                "example": []
+              }
+            }
+          },
+          "errorCreateRole": {
+            "type": "object",
+            "properties": {
+              "errors": {
+                "description": "Lista dos possíveis erros.",
+                "type": "array",
+                "xml": {
+                  "name": "errors",
+                  "wrapped": true
+                },
+                "items": {
+                  "$ref": "#/definitions/accountAPI/Role/responseCreateRole/errors"
+                }
+              }
+            }
+          },
+          "errors": {
+            "description": "Lista contendo alguns erros.",
+            "type": "string",
+            "example": "name: Required."
+          }
+        },
+        "updateRole": {
+          "type": "object",
+          "required": [
+            "name",
+            "active"
+          ],
+          "properties": {
+            "name": {
+              "description": "Nome do perfil.",
+              "type": "string",
+              "pattern": "Este parâmetro aceita somente letras",
+              "maxLength": 80,
+              "example": "Setor Financeiro"
+            },
+            "active": {
+              "description": "Informar se o perfil está ativo ou não.",
+              "type": "boolean",
+              "example": true
+            }
+          }
+        },
+        "responseUpdateRole": {
+          "validUpdateRole": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "description": "Identificador único gerado automaticamente após o cadastro.",
+                "type": "string",
+                "example": "x9"
+              },
+              "name": {
+                "description": "Nome do perfil.",
+                "type": "string",
+                "example": "Setor Financeiro"
+              },
+              "active": {
+                "description": "Informa se o perfil está ativo ou não.",
+                "type": "boolean",
+                "example": true
+              },
+              "createdAt": {
+                "description": "Data e hora em que o perfil foi atualizado.",
+                "type": "string",
+                "example": "2018-04-18T08:50:47.0601923"
+              },
+              "totalUsers": {
+                "description": "Total de usuários que estão vinculados a este perfil.",
+                "type": "number",
+                "example": 0
+              },
+              "scopes": {
+                "description": "Lista com as permissões concedidas ao perfil.",
+                "type": "array<string>",
+                "example": []
+              }
+            }
+          },
+          "errorUpdateRole": {
+            "type": "object",
+            "properties": {
+              "errors": {
+                "description": "Lista dos possíveis erros.",
+                "type": "array",
+                "xml": {
+                  "name": "errors",
+                  "wrapped": true
+                },
+                "items": {
+                  "$ref": "#/definitions/accountAPI/Role/responseUpdateRole/errors"
+                }
+              }
+            }
+          },
+          "errors": {
+            "description": "Lista contendo alguns erros.",
+            "type": "string",
+            "example": "name: Required.\", \n\"active: Required."
+          }
+        },
+        "responseListRole": {
+          "validListRole": {
+            "type": "object",
+            "properties": {
+              "roles": {
+                "description": "Lista dos perfis dos usuários.",
+                "type": "array",
+                "xml": {
+                  "name": "roles",
+                  "wrapped": true
+                },
+                "items": {
+                  "$ref": "#/definitions/accountAPI/perfil"
+                }
+              },
+              "count": {
+                "description": "Total de registros encontrados.",
+                "type": "number",
+                "example": 1
+              }
+            }
+          }
+        },
+        "searchRole": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "description": "Identificador único gerado automaticamente após o cadastro.",
+              "type": "string",
+              "example": "x9"
+            },
+            "name": {
+              "description": "Nome do perfil.",
+              "type": "string",
+              "example": "Setor Financeiro"
+            },
+            "active": {
+              "description": "Informa se o perfil está ativo ou não.",
+              "type": "boolean",
+              "example": true
+            },
+            "createdAt": {
+              "description": "Data e hora em que o perfil foi criado.",
+              "type": "string",
+              "example": "2018-04-17T17:38:40.9565295-03:00"
+            },
+            "totalUsers": {
+              "description": "Total de usuários que estão vinculados a este perfil.",
+              "type": "number",
+              "example": 0
+            },
+            "scopes": {
+              "description": "Lista com as permissões concedidas ao perfil.",
+              "type": "array<string>",
+              "example": [
+                "resource-one.example.readonly",
+                "resource-two.example.readonly",
+                "resource-three.example.edit"
+              ]
+            }
+          }
+        },
+        "desactiveRole": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "description": "Identificador único gerado automaticamente após o cadastro.",
+              "type": "string",
+              "example": "x9"
+            },
+            "name": {
+              "description": "Nome do perfil.",
+              "type": "string",
+              "example": "Setor Financeiro"
+            },
+            "active": {
+              "description": "Informa se o perfil está ativo ou não.",
+              "type": "boolean",
+              "example": false
+            },
+            "createdAt": {
+              "description": "Data e hora em que o perfil foi criado.",
+              "type": "string",
+              "example": "2018-04-17T17:38:40.9565295-03:00"
+            },
+            "totalUsers": {
+              "description": "Total de usuários que estão vinculados a este perfil.",
+              "type": "number",
+              "example": 0
+            },
+            "scopes": {
+              "description": "Lista com as permissões concedidas ao perfil.",
+              "type": "array<string>",
+              "example": [
+                "resource-one.example.readonly",
+                "resource-two.example.readonly",
+                "resource-three.example.edit"
+              ]
+            }
+          }
+        },
+        "activeRole": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "description": "Identificador único gerado automaticamente após o cadastro.",
+              "type": "string",
+              "example": "x9"
+            },
+            "name": {
+              "description": "Nome do perfil.",
+              "type": "string",
+              "example": "Setor Financeiro"
+            },
+            "active": {
+              "description": "Informa se o perfil está ativo ou não.",
+              "type": "boolean",
+              "example": true
+            },
+            "createdAt": {
+              "description": "Data e hora em que o perfil foi criado.",
+              "type": "string",
+              "example": "2018-04-17T17:38:40.9565295-03:00"
+            },
+            "totalUsers": {
+              "description": "Total de usuários que estão vinculados a este perfil.",
+              "type": "number",
+              "example": 0
+            },
+            "scopes": {
+              "description": "Lista com as permissões concedidas ao perfil.",
+              "type": "array<string>",
+              "example": [
+                "resource-one.example.readonly",
+                "resource-two.example.readonly",
+                "resource-three.example.edit"
+              ]
+            }
+          }
+        },
+        "deleteRole": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "description": "Identificador único gerado automaticamente após o cadastro.",
+              "type": "string",
+              "example": "M10"
+            },
+            "name": {
+              "description": "Nome do perfil.",
+              "type": "string",
+              "example": "Auxiliar Administrativo"
+            },
+            "active": {
+              "description": "Informa se o perfil está ativo ou não.",
+              "type": "boolean",
+              "example": true
+            },
+            "createdAt": {
+              "description": "Data e hora em que o perfil foi criado.",
+              "type": "string",
+              "example": "2018-04-17T17:38:40.9565295-03:00"
+            },
+            "totalUsers": {
+              "description": "Total de usuários que estão vinculados a este perfil.",
+              "type": "number",
+              "example": 0
+            }
+          }
+        },
+        "invalidRole": {
+          "type": "object",
+          "properties": {
+            "error": {
+              "description": "Especificação do erro.",
+              "type": "string",
+              "example": "ROLE_NOT_FOUND"
+            }
+          }
+        }
+      },
+      "Permission": {
+        "grantPermission": {
+          "type": "object",
+          "properties": {
+            "scopes": {
+              "type": "array",
+              "xml": {
+                "name": "Array<String>",
+                "wrapped": true
+              },
+              "items": {
+                "$ref": "#/definitions/accountAPI/scopes"
+              }
+            }
+          }
+        },
+        "scopes": {
+          "description": "Pesquisa por escopos que contenham parte ou o todo.",
+          "type": "string",
+          "example": "account.users.edit\", \n\"account.users.readonly"
+        },
+        "responseGrantedPermissions": {
+          "type": "object",
+          "properties": {
+            "scopes": {
+              "description": "Lista com as permissões concedidas.",
+              "type": "array",
+              "xml": {
+                "name": "String",
+                "wrapped": true
+              },
+              "items": {
+                "$ref": "#/definitions/accountAPI/Permission/scopes"
+              }
+            },
+            "count": {
+              "description": "Total de permissões encontradas.",
+              "type": "number",
+              "example": 2
+            }
+          }
+        },
+        "revokePermission": {
+          "type": "object",
+          "required": [
+            "scopes"
+          ],
+          "properties": {
+            "scopes": {
+              "type": "array",
+              "xml": {
+                "name": "Array<String>",
+                "wrapped": true
+              },
+              "items": {
+                "$ref": "#/definitions/accountAPI/Scopes"
+              }
+            }
+          }
+        },
+        "responseRevokePermission": {
+          "errorRevokePermission": {
+            "type": "object",
+            "properties": {
+              "errors": {
+                "description": "Lista dos possíveis erros.",
+                "type": "array",
+                "xml": {
+                  "name": "errors",
+                  "wrapped": true
+                },
+                "items": {
+                  "$ref": "#/definitions/accountAPI/Permission/responseRevokePermission/errors"
+                }
+              }
+            }
+          },
+          "errors": {
+            "description": "Lista contendo alguns erros.",
+            "type": "string",
+            "example": "scopes: At least one item."
+          }
+        }
+      },
+      "User": {
+        "createUser": {
+          "type": "object",
+          "required": [
+            "roleId",
+            "email",
+            "fullName",
+            "taxDocument",
+            "appUrl"
+          ],
+          "properties": {
+            "roleId": {
+              "description": "ID do perfil do usuário. Se o usuário estiver associado a um perfil inativo, ele não terá acesso aos recursos da API. ",
+              "type": "string",
+              "maxLength": 20,
+              "example": "x9"
+            },
+            "fullName": {
+              "description": "Nome completo do usuário.",
+              "type": "string",
+              "pattern": "Este parâmetro aceita somente letras",
+              "maxLength": 120,
+              "example": "João Mateus dos Santos"
+            },
+            "email": {
+              "description": "E-mail utilizado para autenticação.",
+              "type": "string",
+              "pattern": "example@email.com",
+              "maxLength": 120,
+              "example": "joao@email.com"
+            },
+            "taxDocument": {
+              "description": "CPF do usuário.",
+              "type": "string",
+              "pattern": "Ex: 000.000.000-00",
+              "maxLength": 14,
+              "example": "123.123.123-87"
+            },
+            "appUrl": {
+              "description": "Url do aplicativo que irá constar nas informações enviadas para o e-mail.",
+              "type": "string",
+              "maxLength": 255,
+              "example": "http://meuaplicativo.com.br/"
+            }
+          }
+        },
+        "responseCreateUser": {
+          "errorCreateUser": {
+            "type": "object",
+            "properties": {
+              "errors": {
+                "description": "Lista dos possíveis erros.",
+                "type": "array",
+                "xml": {
+                  "name": "errors",
+                  "wrapped": true
+                },
+                "items": {
+                  "$ref": "#/definitions/accountAPI/User/responseCreateUser/errors"
+                }
+              }
+            }
+          },
+          "errors": {
+            "description": "Lista contendo alguns erros.",
+            "type": "string",
+            "example": "email: Required.\", \n\"taxDocument: Required."
+          },
+          "invalidCreateUser": {
+            "type": "object",
+            "properties": {
+              "error": {
+                "description": "Especificação do erro.",
+                "type": "string",
+                "example": "ROLE_NOT_FOUND"
+              }
+            }
+          }
+        },
+        "updateUser": {
+          "type": "object",
+          "required": [
+            "email",
+            "roleId",
+            "fullName",
+            "taxDocument"
+          ],
+          "properties": {
+            "roleId": {
+              "description": "ID do perfil do usuário.",
+              "type": "string",
+              "maxLength": 20,
+              "example": "x9"
+            },
+            "fullName": {
+              "description": "Nome completo do usuário.",
+              "type": "string",
+              "pattern": "Este parâmetro aceita somente letras",
+              "maxLength": 120,
+              "example": "João Mateus dos Santos"
+            },
+            "email": {
+              "description": "E-mail do usuário. Lembrando que para a realização do login o usuário deve utilizar o e-mail cadastrado.",
+              "type": "string",
+              "pattern": "example@email.com",
+              "maxLength": 120,
+              "example": "joao@email.com"
+            },
+            "taxDocument": {
+              "description": "CPF do usuário. Apesar do CPF ser informado ele não pode ser alterado.",
+              "type": "string",
+              "pattern": "Ex: 000.000.000-00",
+              "maxLength": 14,
+              "example": "123.123.123-87"
+            }
+          }
+        },
+        "responseUpdateUser": {
+          "errorUpdateUser": {
+            "type": "object",
+            "properties": {
+              "errors": {
+                "description": "Lista dos possíveis erros.",
+                "type": "array",
+                "xml": {
+                  "name": "errors",
+                  "wrapped": true
+                },
+                "items": {
+                  "$ref": "#/definitions/accountAPI/User/responseUpdateUser/errors"
+                }
+              }
+            }
+          },
+          "errors": {
+            "description": "Lista contendo alguns erros.",
+            "type": "string",
+            "example": "fullName: Required.\", \n\"taxDocument: Required."
+          },
+          "invalidUpdateUser": {
+            "type": "object",
+            "properties": {
+              "error": {
+                "description": "Especificação do erro.",
+                "type": "string",
+                "example": "DUPLICATE_TAX_DOCUMENT"
+              }
+            }
+          }
+        },
+        "responseListUsers": {
+          "validListUsers": {
+            "type": "object",
+            "properties": {
+              "users": {
+                "description": "Lista dos usuários.",
+                "type": "array",
+                "xml": {
+                  "name": "users",
+                  "wrapped": true
+                },
+                "items": {
+                  "$ref": "#/definitions/accountAPI/user"
+                }
+              },
+              "count": {
+                "description": "Total de registros encontrados.",
+                "type": "number",
+                "example": 1
+              }
+            }
+          }
+        },
+        "desactiveUser": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "description": "Identificador único gerado automaticamente após o cadastro.",
+              "type": "string",
+              "example": "Br"
+            },
+            "email": {
+              "description": "E-mail do usuário. Lembrando que para a realização do login o usuário deve utilizar o e-mail cadastrado.",
+              "type": "string",
+              "example": "joao@email.com"
+            },
+            "fullName": {
+              "description": "Nome do usuário.",
+              "type": "string",
+              "example": "João Mateus dos Santos"
+            },
+            "taxDocument": {
+              "description": "CPF do usuário.",
+              "type": "string",
+              "example": "123.123.123-87"
+            },
+            "active": {
+              "description": "Informa se o usuário está ativo ou não.",
+              "type": "boolean",
+              "example": false
+            },
+            "createdAt": {
+              "description": "Data e hora em que o usuário foi criado.",
+              "type": "string",
+              "example": "2018-04-10T14:14:20.1394168"
+            },
+            "role": {
+              "description": "Informações sobre o perfil do usuário.",
+              "allOf": [
+                {
+                  "$ref": "#/definitions/accountAPI/role"
+                }
+              ]
+            }
+          }
+        },
+        "invalidUser": {
+          "type": "object",
+          "properties": {
+            "error": {
+              "description": "Especificação do erro.",
+              "type": "string",
+              "example": "USER_NOT_FOUND"
+            }
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,799 @@
+,
+    "APIAntecipacao": {
+      "podeAntecipar": {
+        "type": "object",
+        "properties": {
+          "canAnticipate": {
+            "description": "Informa se o lojista pode solicitar antecipação.",
+            "type": "boolean",
+            "example": true
+          },
+          "termsAccepted": {
+            "description": "Informa se os termos de acordo foram aceitos.",
+            "type": "boolean",
+            "exmaple": true
+          }
+        }
+      },
+      "listarTransacao": {
+        "type": "object",
+        "properties": {
+          "number": {
+            "description": "Número da transação, este número é único.",
+            "type": "string",
+            "example": "775522"
+          },
+          "startDate": {
+            "description": "Data inicial para realizar a busca.",
+            "type": "string",
+            "pattern": "Ano-Mês-Dia",
+            "example": "2018-05-20"
+          },
+          "endDate": {
+            "description": "Data final para realizar a busca.",
+            "type": "string",
+            "pattern": "Ano-Mês-Dia",
+            "example": "2018-06-20"
+          },
+          "offset": {
+            "description": "Especificação da quantidade de resultados da busca em massa por página. Caso este parâmetro não seja informado ele assumirá valores padrões, dessa forma a lista é exibida normalmente.",
+            "allOf": [
+              {
+                "$ref": "#/definitions/APIAccount/offset"
+              }
+            ]
+          }
+        }
+      },
+      "ResListarTransacao": {
+        "ValListarTransacao": {
+          "type": "object",
+          "properties": {
+            "transactions": {
+              "type": "array",
+              "description": "Lista de todas as transações realizadas.",
+              "xml": {
+                "name": "transactions",
+                "wrapped": true
+              },
+              "example": [
+                {
+                  "id": "fH8",
+                  "date": "2018-05-23T09:50:34.813",
+                  "number": "775522",
+                  "status": null,
+                  "installments": 1,
+                  "pendingInstallments": 1,
+                  "receivedInstallments": 0,
+                  "operationFee": 0.4,
+                  "cardFeePercentage": 4.29,
+                  "anticipationFee": 3.8,
+                  "anticipatedPercentage": 100,
+                  "installmentValue": 9,
+                  "total": 9,
+                  "totalTransfer": 0,
+                  "totalAnticipated": 8.21,
+                  "totalTransferAnticipated": 7.9,
+                  "cardFeeAmount": 0.39,
+                  "note": null,
+                  "cardBrand": {
+                    "id": "mastercard",
+                    "name": "Mastercard"
+                  }
+                }
+              ],
+              "items": {
+                "$ref": "#/definitions/APIAntecipacao/lisTransacao"
+              }
+            },
+            "count": {
+              "description": "Total de registros encontrados.",
+              "type": "number",
+              "example": 1
+            }
+          }
+        }
+      },
+      "lisTransacao": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "description": "Identificador único, gerado automaticamente.",
+            "type": "string",
+            "example": "fH8"
+          },
+          "date": {
+            "description": "Data da realização da transação.",
+            "type": "string",
+            "example": "2018-05-23T09:50:34.813"
+          },
+          "number": {
+            "description": "Número da transação, este número é único.",
+            "type": "string",
+            "example": "775522"
+          },
+          "status": {
+            "description": "Situação em que a transação se encontra, podendo ser: `Pending` -`Approved` - `PartiallyApproved` - `Canceled` - `Disapproved`.",
+            "type": "string",
+            "example": null
+          },
+          "installments": {
+            "description": "Quantidade de parcelas da transação.",
+            "type": "number",
+            "example": 1
+          },
+          "pendingInstallments": {
+            "description": "Quantidade de parcelas pendentes da transação.",
+            "type": "number",
+            "example": 1
+          },
+          "receivedInstallments": {
+            "description": "Quantidade de parcelas em que o pagamento já foi realizado.",
+            "type": "number",
+            "example": 0
+          },
+          "operationFee": {
+            "description": "Taxa da transação.",
+            "type": "number",
+            "example": 0.4
+          },
+          "cardFeePercentage": {
+            "description": "Taxa percentual do cartão.",
+            "type": "number",
+            "example": 4.29
+          },
+          "anticipationFee": {
+            "description": "Taxa para a realização da antecipação.",
+            "type": "number",
+            "example": 3.80
+          },
+          "anticipatedPercentage": {
+            "description": "Percentual do valor que será antecipado. Se o pagamento foi realizado com Pinpad a porcentagem será de 100%. Se  pagamento foi realizado através do pagamento digitado as transações até R$ 50.00 serão de 100%, as transações acima de R$ 50.00 terão a porcentagem inicial de 50%.",
+            "type": "number",
+            "example": 100.0
+          },
+          "installmentValue": {
+            "description": "Valor da Parcela.",
+            "type": "number",
+            "example": 9.0
+          },
+          "total": {
+            "description": "Valor total da transação.",
+            "type": "number",
+            "example": 9.0
+          },
+          "totalTransfer": {
+            "description": "Valor total da transferência.",
+            "type": "number",
+            "example": 0.0
+          },
+          "totalAnticipated": {
+            "description": "Valor total da antecipação.",
+            "type": "number",
+            "example": 8.21
+          },
+          "totalTransferAnticipated": {
+            "description": "Valor total do repasse da antecipação.",
+            "type": "number",
+            "example": 7.9
+          },
+          "cardFeeAmount": {
+            "description": "Dedução da taxa do cartão.",
+            "type": "number",
+            "example": 0.39
+          },
+          "note": {
+            "description": "Observações.",
+            "type": "string"
+          },
+          "cardBrand": {
+            "description": "Informações sobre a bandeira do cartão.",
+            "type": "object",
+            "properties": {
+              "id": {
+                "description": "Identificador único da bandeira do cartão.",
+                "type": "string",
+                "example": "mastercard"
+              },
+              "name": {
+                "description": "Nome da bandeira do cartão.",
+                "type": "string",
+                "example": "Mastercard"
+              }
+            }
+          }
+        }
+      },
+      "ResListarTransacaoAndamento": {
+        "ValListarTransacaoAndamento": {
+          "type": "object",
+          "properties": {
+            "transactions": {
+              "type": "array",
+              "description": "Lista de todas as transações realizadas.",
+              "xml": {
+                "name": "transactions",
+                "wrapped": true
+              },
+              "example": [
+                {
+                  "id": "fH8",
+                  "date": "2018-05-23T09:50:34.813",
+                  "number": "775522",
+                  "status": null,
+                  "installments": 1,
+                  "pendingInstallments": 1,
+                  "receivedInstallments": 0,
+                  "operationFee": 0.4,
+                  "cardFeePercentage": 4.29,
+                  "anticipationFee": 3.8,
+                  "anticipatedPercentage": 100,
+                  "installmentValue": 9,
+                  "total": 9,
+                  "totalTransfer": 0,
+                  "totalAnticipated": 8.21,
+                  "totalTransferAnticipated": 7.9,
+                  "cardFeeAmount": 0.39,
+                  "note": null,
+                  "cardBrand": {
+                    "id": "mastercard",
+                    "name": "Mastercard"
+                  }
+                }
+              ],
+              "items": {
+                "$ref": "#/definitions/APIAntecipacao/lisTransacaoAndamento"
+              }
+            },
+            "count": {
+              "description": "Total de registros encontrados.",
+              "type": "number",
+              "example": 1
+            }
+          }
+        }
+      },
+      "lisTransacaoAndamento": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "description": "Identificador único, gerado automaticamente.",
+            "type": "string",
+            "example": "fH8"
+          },
+          "date": {
+            "description": "Data da realização da transação.",
+            "type": "string",
+            "example": "2018-05-23T09:50:34.813"
+          },
+          "number": {
+            "description": "Número da transação, este número é único.",
+            "type": "string",
+            "example": "775522"
+          },
+          "status": {
+            "description": "Situação em que a transação se encontra, podendo ser: `Pending` -`Approved` - `PartiallyApproved` - `Canceled` - `Disapproved`.",
+            "type": "string",
+            "example": "Pending"
+          },
+          "installments": {
+            "description": "Quantidade de parcelas da transação.",
+            "type": "number",
+            "example": 1
+          },
+          "pendingInstallments": {
+            "description": "Quantidade de parcelas pendentes da transação.",
+            "type": "number",
+            "example": 1
+          },
+          "receivedInstallments": {
+            "description": "Quantidade de parcelas em que o pagamento já foi realizado.",
+            "type": "number",
+            "example": 0
+          },
+          "operationFee": {
+            "description": "Taxa da transação.",
+            "type": "number",
+            "example": 0.4
+          },
+          "cardFeePercentage": {
+            "description": "Taxa percentual do cartão",
+            "type": "number",
+            "example": 4.29
+          },
+          "anticipationFee": {
+            "description": "Taxa para a realização da antecipação",
+            "type": "number",
+            "example": 3.80
+          },
+          "anticipatedPercentage": {
+            "description": "Percentual do valor que será antecipado. Se o pagamento foi realizado com Pinpad a porcentagem será de 100%. Se  pagamento foi realizado através do pagamento digitado as transações até R$ 50.00 serão de 100%, as transações acima de R$ 50.00 terão a porcentagem inicial de 50%.",
+            "type": "number",
+            "example": 100.0
+          },
+          "installmentValue": {
+            "description": "Valor da Parcela.",
+            "type": "number",
+            "example": 9.0
+          },
+          "total": {
+            "description": "Valor total da transação.",
+            "type": "number",
+            "example": 9.0
+          },
+          "totalTransfer": {
+            "description": "Valor total da transferência.",
+            "type": "number",
+            "example": 0.0
+          },
+          "totalAnticipated": {
+            "description": "Valor total da antecipação.",
+            "type": "number",
+            "example": 8.21
+          },
+          "totalTransferAnticipated": {
+            "description": "Valor total do repasse da antecipação.",
+            "type": "number",
+            "example": 7.9
+          },
+          "cardFeeAmount": {
+            "description": "Dedução da taxa do cartão.",
+            "type": "number",
+            "example": 0.39
+          },
+          "note": {
+            "description": "Observações.",
+            "type": "string"
+          },
+          "cardBrand": {
+            "description": "Informações sobre a bandeira do cartão.",
+            "type": "object",
+            "properties": {
+              "id": {
+                "description": "Identificador único da bandeira do cartão.",
+                "type": "string",
+                "example": "mastercard"
+              },
+              "name": {
+                "description": "Nome da bandeira do cartão.",
+                "type": "string",
+                "example": "Mastercard"
+              }
+            }
+          }
+        }
+      },
+      "gerarAntecipacao": {
+        "type": "object",
+        "required": [
+          "transactions"
+        ],
+        "properties": {
+          "transactions": {
+            "type": "array",
+            "description": "Lista com os IDs para a geração da antecipação.",
+            "xml": {
+              "name": "transactions",
+              "wrapped": true
+            },
+            "items": {
+              "$ref": "#/definitions/APIAntecipacao/transactions"
+            }
+          }
+        }
+      },
+      "transactions": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "description": "Identificador único, gerado automaticamente.",
+            "type": "string",
+            "example": "fH8"
+          }
+        }
+      },
+      "ResGerarAntecipacao": {
+        "ValGerarAntecipacao": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "description": "Identificador único, gerado automaticamente.",
+              "type": "string",
+              "example": "Th9"
+            },
+            "date": {
+              "description": "Data da realização da transação.",
+              "type": "string",
+              "example": "2018-05-23T09:50:34.813"
+            },
+            "totalRequested": {
+              "description": "Valor total da antecipação solicitada.",
+              "type": "number",
+              "example": 8.21
+            },
+            "totalAnticipated": {
+              "description": "Valor total da antecipação.",
+              "type": "number",
+              "example": 8.21
+            },
+            "totalReceivable": {
+              "description": "Valor total que será recebido.",
+              "type": "number",
+              "example": 6.5
+            },
+            "debitBalance": {
+              "description": "Informações do saldo do débito.",
+              "type": "object",
+              "properties": {
+                "monthlyPayment": {
+                  "description": "Valor do pagamento mensal.",
+                  "type": "number",
+                  "example": 0.0
+                },
+                "otherDiscounts": {
+                  "description": "Valor de outros descontos.",
+                  "type": "number",
+                  "example": 0.0
+                },
+                "total": {
+                  "description": "Valor total do débito",
+                  "type": "number",
+                  "example": 0.0
+                }
+              }
+            }
+          }
+        },
+        "BadGerarAntecipacao": {
+          "type": "object",
+          "properties": {
+            "errors": {
+              "description": "Lista dos possíveis erros.",
+              "type": "array",
+              "xml": {
+                "name": "errors",
+                "wrapped": true
+              },
+              "items": {
+                "$ref": "#/definitions/APIAntecipacao/ResGerarAntecipacao/errors"
+              }
+            }
+          }
+        },
+        "errors": {
+          "description": "Lista contendo alguns erros.",
+          "type": "string",
+          "example": "transactions[0]: Required."
+        }
+      },
+      "InTransacao": {
+        "type": "object",
+        "properties": {
+          "error": {
+            "description": "Especificação do erro.",
+            "type": "string",
+            "example": "TRANSACTION_NOT_FOUND"
+          }
+        }
+      },
+      "InAntecipacao": {
+        "type": "object",
+        "properties": {
+          "error": {
+            "description": "Especificação do erro.",
+            "type": "string",
+            "example": "ANTICIPATION_NOT_FOUND"
+          }
+        }
+      },
+      "ResGerarTodasAntecipacoes": {
+        "ValGerarTodasAntecipacoes": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "description": "Identificador único, gerado automaticamente.",
+              "type": "string",
+              "example": "Jmw10"
+            },
+            "date": {
+              "description": "Data da solicitação da antecipação.",
+              "type": "string",
+              "example": "2018-05-23T09:50:34.813"
+            },
+            "totalRequested": {
+              "description": "Valor total da antecipação solicitada.",
+              "type": "number",
+              "example": 2452.03
+            },
+            "totalAnticipated": {
+              "description": "Valor total da antecipação.",
+              "type": "number",
+              "example": 1739.11
+            },
+            "totalReceivable": {
+              "description": "Valor total que será recebido.",
+              "type": "number",
+              "example": 1589.82
+            },
+            "debitBalance": {
+              "description": "Informações do saldo do débito.",
+              "type": "object",
+              "properties": {
+                "monthlyPayment": {
+                  "description": "Valor do pagamento mensal.",
+                  "type": "number",
+                  "example": 0.0
+                },
+                "otherDiscounts": {
+                  "description": "Valor de outros descontos.",
+                  "type": "number",
+                  "example": 0.0
+                },
+                "total": {
+                  "description": "Valor total do débito.",
+                  "type": "number",
+                  "example": 0.0
+                }
+              }
+            }
+          }
+        },
+        "BadGerarTodasAntecipacoes": {
+          "type": "object",
+          "properties": {
+            "error": {
+              "description": "Especificação do erro.",
+              "type": "string",
+              "example": "REQUEST_IN_PROGRESS"
+            }
+          }
+        }
+      },
+      "pesquisarAntecipacaoAndamento": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "description": "Identificador único, gerado automaticamente.",
+            "type": "string",
+            "example": "fH8"
+          },
+          "requestDate": {
+            "description": "Data da solicitação da antecipação.",
+            "type": "string",
+            "example": "2018-05-23T09:50:34.813"
+          },
+          "releaseDate": {
+            "description": "Data em que a solicitação da antecipação foi analisada.",
+            "type": "string",
+            "example": "2018-05-26T09:50:34.813"
+          },
+          "effectiveDate": {
+            "description": "Data em que a antecipação foi efetivada.",
+            "type": "string",
+            "example": "2018-05-29T09:50:34.813"
+          },
+          "status": {
+            "description": "Situação em que a transação se encontra, podendo ser: `Pending` -`Approved` - `PartiallyApproved` - `Canceled` - `Disapproved`.",
+            "type": "string",
+            "example": "Approved"
+          },
+          "totalRequested": {
+            "description": "Valor total da antecipação solicitada.",
+            "type": "number",
+            "example": 2452.03
+          },
+          "totalAnticipated": {
+            "description": "Valor total da antecipação.",
+            "type": "number",
+            "example": 1739.11
+          },
+          "totalReceivable": {
+            "description": "Valor total que será recebido.",
+            "type": "number",
+            "example": 1589.82
+          },
+          "debitBalance": {
+            "description": "Informações do saldo do débito.",
+            "type": "object",
+            "properties": {
+              "monthlyPayment": {
+                "description": "Valor do pagamento mensal.",
+                "type": "number",
+                "example": 0.0
+              },
+              "otherDiscounts": {
+                "description": "Valor de outros descontos.",
+                "type": "number",
+                "example": 0.0
+              },
+              "total": {
+                "description": "Valor total do débito.",
+                "type": "number",
+                "example": 0.0
+              }
+            }
+          }
+        }
+      },
+      "InPesquisarAntecipacao": {
+        "type": "object",
+        "properties": {
+          "error": {
+            "description": "Especificação do erro.",
+            "type": "string",
+            "example": "ANTICIPATION_NOT_FOUND"
+          }
+        }
+      },
+      "extratoFinanceiro": {
+        "type": "object",
+        "properties": {
+          "creditBalance": {
+            "description": "Saldo do repasse para o lojista.",
+            "type": "number",
+            "example": 2653.77
+          },
+          "transferRate": {
+            "description": "Valor que será pago ao realizar uma tranferência com o valor da antecipação.",
+            "type": "number",
+            "example": 1.4
+          },
+          "anticipatedBalance": {
+            "description": "Informações da antecipação.",
+            "type": "object",
+            "properties": {
+              "totalAvailable": {
+                "description": "Valor bruto da antecipação.",
+                "type": "number",
+                "example": 1940.85
+              },
+              "totalToReceive": {
+                "description": "Valor líquido da antecipação. ",
+                "type": "number",
+                "example": 1782.17
+              }
+            }
+          },
+          "debitBalance": {
+            "description": "Informações do débito.",
+            "type": "object",
+            "properties": {
+              "monthlyPayment": {
+                "description": "Valor do pagamento mensal.",
+                "type": "number",
+                "example": 0.0
+              },
+              "otherDiscounts": {
+                "description": "Valor de outros descontos.",
+                "type": "number",
+                "example": 0.0
+              },
+              "total": {
+                "description": "Valor total do débito",
+                "type": "number",
+                "example": 0.0
+              }
+            }
+          },
+          "total": {
+            "description": "Valor disponível após calcular a diferença do valor da antecipação com o valor do débito.",
+            "type": "number",
+            "example": 2653.77
+          }
+        }
+      },
+      "historico": {
+        "type": "object",
+        "properties": {
+          "startDate": {
+            "description": "Data inicial para realizar a busca.",
+            "type": "string",
+            "pattern": "Ano-Mês-Dia",
+            "example": "2018-05-20"
+          },
+          "endDate": {
+            "description": "Data final para realizar a busca.",
+            "type": "string",
+            "pattern": "Ano-Mês-Dia",
+            "example": "2018-06-20"
+          },
+          "offset": {
+            "description": "Especificação da quantidade de resultados da busca em massa por página. Caso este parâmetro não seja informado ele assumirá valores padrões, dessa forma a lista é exibida normalmente.",
+            "allOf": [
+              {
+                "$ref": "#/definitions/APIAccount/offset"
+              }
+            ]
+          }
+        }
+      },
+      "ResHistorico": {
+        "ValHistorico": {
+          "type": "object",
+          "properties": {
+            "anticipations": {
+              "type": "array",
+              "description": "Lista de todas as antecipações.",
+              "xml": {
+                "name": "transactions",
+                "wrapped": true
+              },
+              "items": {
+                "$ref": "#/definitions/APIAntecipacao/lisHistorico"
+              }
+            },
+            "count": {
+              "description": "Total de registros encontrados.",
+              "type": "number",
+              "example": 1
+            }
+          }
+        }
+      },
+      "lisHistorico": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "description": "Identificador único, gerado automaticamente.",
+            "type": "string",
+            "example": "fH8"
+          },
+          "requestDate": {
+            "description": "Data da solicitação da antecipação.",
+            "type": "string",
+            "example": "2018-05-23T09:50:34.813"
+          },
+          "releaseDate": {
+            "description": "Data em que a solicitação da antecipação foi analisada.",
+            "type": "string",
+            "example": "2018-05-26T09:50:34.813"
+          },
+          "effectiveDate": {
+            "description": "Data em que a antecipação foi efetivada.",
+            "type": "string",
+            "example": "2018-05-29T09:50:34.813"
+          },
+          "status": {
+            "description": "Situação em que a transação se encontra, podendo ser: `PartiallyApproved` - `Approved` - `Canceled` - `Disapproved`.",
+            "type": "string",
+            "example": "Canceled"
+          },
+          "totalRequested": {
+            "description": "Valor total da antecipação solicitada.",
+            "type": "number",
+            "example": 2452.03
+          },
+          "totalAnticipated": {
+            "description": "Valor total da antecipação.",
+            "type": "number",
+            "example": 1739.11
+          },
+          "totalReceivable": {
+            "description": "Valor total que será recebido.",
+            "type": "number",
+            "example": 1589.82
+          },
+          "debitBalance": {
+            "description": "Informações do saldo do débito.",
+            "type": "object",
+            "properties": {
+              "monthlyPayment": {
+                "description": "Valor do pagamento mensal.",
+                "type": "number",
+                "example": 0.0
+              },
+              "otherDiscounts": {
+                "description": "Valor de outros descontos.",
+                "type": "number",
+                "example": 0.0
+              },
+              "total": {
+                "description": "Valor total do débito.",
+                "type": "number",
+                "example": 0.0
+              }
+            }
+          }
+        }
+      }
+    }

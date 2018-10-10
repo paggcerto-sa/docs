@@ -1,0 +1,853 @@
+,
+    "APIBoleto": {
+      "InBoleto": {
+        "type": "object",
+        "properties": {
+          "error": {
+            "description": "Especificação do erro.",
+            "type": "string",
+            "example": "ACCOUNT_NOT_APPROVED"
+          }
+        }
+      },
+      "boleto": {
+        "type": "object",
+        "properties": {
+          "amount": {
+            "description": "Valor do pagamento.",
+            "type": "number",
+            "example": 20.50
+          },
+          "discount": {
+            "description": "Valor do desconto.",
+            "type": "number",
+            "example": 2.50
+          },
+          "fines": {
+            "description": "Valor da multa cobrada após o vencimento do boleto.",
+            "type": "number",
+            "example": 4.90
+          },
+          "interest": {
+            "description": "Valor do juros cobrado após o vencimento do boleto.",
+            "type": "number",
+            "example": 3
+          },
+          "discountDays": {
+            "description": "Até quantos dias, anteriores a data de vencimento, será aplicado o desconto.",
+            "type": "number",
+            "pattern": "Este parâmetro não aceita caracteres especiais e letras",
+            "example": 30
+          },
+          "acceptedUntil": {
+            "description": "Até quantos dias, contados a partir da data de vencimento, o boleto poderá ser pago.",
+            "type": "number",
+            "example": 15
+          },
+          "payers": {
+            "description": "Lista com os pagadores para a geração dos boletos.",
+            "type": "array",
+            "xml": {
+              "name": "payers",
+              "wrapped": true
+            },
+            "items": {
+              "$ref": "#/definitions/APIBoleto/payers"
+            }
+          },
+          "number": {
+            "description": "Identificador único gerado automaticamente.",
+            "type": "number",
+            "example": 1000000512358
+          },
+          "dueDate": {
+            "description": "Data do vencimento (aplicável para boleto). A data do vencimento deve ser posterior a data atual.",
+            "type": "string",
+            "example": "2018-06-30"
+          },
+          "amountPaid": {
+            "description": "Valor pago com este cartão.",
+            "type": "number",
+            "example": 18.50
+          },
+          "barcode": {
+            "description": "Código de Barras.",
+            "type": "interge",
+            "example": null
+          },
+          "registerDate": {
+            "description": "Data em que o boleto foi registrado.",
+            "type": "string|null",
+            "example": null
+          },
+          "paidAt": {
+            "description": "Data do pagamento.",
+            "type": "string|null",
+            "example": null
+          },
+          "status": {
+            "description": "Status do boleto.",
+            "type": "number",
+            "example": 0
+          },
+          "registrationStatus": {
+            "description": "Registro do status.",
+            "type": "number",
+            "example": 0
+          },
+          "createdDate": {
+            "description": "Data de emissão do boleto.",
+            "type": "string",
+            "example": "2018-05-23T12:15:26.1407465-03:00"
+          },
+          "instructions": {
+            "description": "Lista com as informações sobre o boleto.",
+            "type": "array<string>",
+            "example": [
+              "APÓS O VENCIMENTO SOMENTE PAGAR EM AGÊNCIA BANCÁRIA. APÓS O VENCIMENTO O VALOR DOS JUROS E MULTA DEVEM SER SOMADOS AO VALOR DO BOLETO."
+            ]
+          },
+          "registrationErrors": {
+            "description": "Informa se erros foram registrados.",
+            "type": "array<string>",
+            "example": null
+          }
+        }
+      },
+      "gerarBoleto": {
+        "type": "object",
+        "required": [
+          "amount",
+          "dueDate",
+          "payers"
+        ],
+        "properties": {
+          "amount": {
+            "description": "Valor cobrado. O valor mínimo é R$ 10,00 por boleto.",
+            "type": "number",
+            "pattern": "Valor monetário",
+            "example": 160.78
+          },
+          "discount": {
+            "description": "Valor do desconto.",
+            "type": "number",
+            "pattern": "Valor em porcentagem",
+            "example": 2.55
+          },
+          "fines": {
+            "description": "Valor da multa cobrada após o vencimento do boleto. O valor deve estar entre 0.25% e 20% do valor cobrado no boleto.",
+            "type": "number",
+            "pattern": "Valor em porcentagem",
+            "example": 4.95
+          },
+          "interest": {
+            "description": "Valor do juros cobrado por dia após o vencimento do boleto.",
+            "type": "number",
+            "pattern": "Valor em porcentagem",
+            "minimum": 0.25,
+            "maximum": 20,
+            "example": 3
+          },
+          "discountDays": {
+            "description": "Até quantos dias, anteriores a data de vencimento, será aplicado o desconto.",
+            "type": "number",
+            "minimum": 1,
+            "maximum": 30,
+            "example": 30
+          },
+          "acceptedUntil": {
+            "description": "Até quantos dias, contados a partir da data de vencimento, o boleto poderá ser pago.",
+            "type": "number",
+            "minimum": 1,
+            "maximum": 25,
+            "example": 15
+          },
+          "payers": {
+            "description": "Identificação do(s) pagador(es) para a geração do(s) boleto(s). ",
+            "type": "array",
+            "maximum": 100,
+            "xml": {
+              "name": "payers",
+              "wrapped": true
+            },
+            "items": {
+              "$ref": "#/definitions/APIBoleto/payers"
+            }
+          },
+          "dates": {
+            "description": "Datas dos vencimentos dos boletos. Mais de uma data identifica pagamento com carnê.",
+            "type": "array<string>",
+            "pattern": "Ano-Mês-Dia",
+            "example": [
+              "2018-06-30",
+              "2018-07-30",
+              "2018-08-30"
+            ]
+          },
+          "instructions": {
+            "description": "Instruções impressas no boleto.",
+            "type": "string",
+            "example": "APÓS O VENCIMENTO SOMENTE PAGAR EM AGÊNCIA BANCÁRIA. APÓS O VENCIMENTO O VALOR DOS JUROS E MULTA DEVEM SER SOMADOS AO VALOR DO BOLETO."
+          },
+          "splitters": {
+            "description": "Informações do pagamento com *split*.",
+            "type": "array",
+            "xml": {
+              "name": "splitters",
+              "wrapped": true
+            },
+            "items": {
+              "$ref": "#/definitions/APIPagamento/splitConfiguration/requestSplitters"
+            }
+          }
+        }
+      },
+      "payers": {
+        "type": "object",
+        "pattern": "Máximo 100 de clientes, sendo que cada um deles pode ter até 12 boletos",
+        "required": [
+          "name",
+          "taxDocument"
+        ],
+        "properties": {
+          "sellingKey": {
+            "description": "Caso deseje associar seu código interno ao pagamento na Paggcerto. Esta chave deve ser única e informada manualmente.",
+            "type": "string",
+            "example": "Ab01"
+          },
+          "name": {
+            "description": "Nome do pagador.",
+            "type": "string",
+            "pattern": "Este parâmetro não aceita caracteres especiais e números",
+            "example": "Rodrigo Alves"
+          },
+          "taxDocument": {
+            "description": "CPF/CNPJ do pagador.",
+            "type": "string",
+            "pattern": "CPF: 000.000.000-00 ou CNPJ: 00.000.000/0000-00",
+            "example": "953.262.300-03"
+          }
+        }
+      },
+      "boletoGerado": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "description": "Identificador único gerado automaticamente após a realização pagamento.",
+            "type": "string",
+            "example": "c2D3"
+          },
+          "amount": {
+            "description": "Valor  total do pagamento.",
+            "type": "number",
+            "example": 160.5
+          },
+          "installments": {
+            "description": "A quantidade de parcelas deve ser de 1 a 12. Pode variar de acordo com a bandeira, porém, respeitando esse intervalo.",
+            "type": "number",
+            "example": 3
+          },
+          "installmentValue": {
+            "description": "Valor que será cobrado em cada parcela.",
+            "type": "number",
+            "example": 53.5
+          },
+          "createdAt": {
+            "description": "Data da realização da venda.",
+            "type": "string",
+            "example": "2018-05-30T12:15:26.1407465-03:00"
+          },
+          "canceledAt": {
+            "description": "Data da emissão do boleto.",
+            "type": "string|null",
+            "example": null
+          },
+          "discount": {
+            "description": "Valor do desconto.",
+            "type": "number",
+            "pattern": "Valor em porcentagem",
+            "example": 0.25
+          },
+          "fines": {
+            "description": "Valor da multa cobrada após o vencimento do boleto.",
+            "type": "number",
+            "pattern": "Valor em porcentagem",
+            "example": 4.90
+          },
+          "interest": {
+            "description": "Valor do juros cobrado por dia após o vencimento do boleto.",
+            "type": "number",
+            "pattern": "Valor em porcentagem",
+            "example": 3
+          },
+          "customers": {
+            "description": "Identificação do(s) cliente(s) para a geração do(s) boleto(s).",
+            "type": "object",
+            "properties": {
+              "id": {
+                "description": "Identificador único do cliente.",
+                "type": "string",
+                "example": "Wc9"
+              },
+              "sellingKey": {
+                "description": "Caso deseje associar seu código interno ao pagamento na Paggcerto. Esta chave deve ser única e informada manualmente.",
+                "type": "string",
+                "example": "Ab01"
+              },
+              "name": {
+                "description": "Nome do pagador.",
+                "type": "string",
+                "pattern": "Este parâmetro não aceita caracteres especiais e números",
+                "example": "Rodrigo Alves"
+              },
+              "taxDocument": {
+                "description": "CPF/CNPJ do pagador.",
+                "type": "string",
+                "pattern": "CPF: 000.000.000-00 ou CNPJ: 00.000.000/0000-00",
+                "example": "953.262.300-03"
+              }
+            }
+          },
+          "bankSlips": {
+            "description": "Lista do(s) boleto(s) gerado(s).",
+            "type": "array",
+            "xml": {
+              "name": "bankSlips",
+              "wrapped": true
+            },
+            "example": [
+              {
+                "number": 1000000512358,
+                "dueDate": "2018-06-30T09:56:34.43",
+                "canceledAt": null,
+                "paidAt": null,
+                "amount": 53.5,
+                "amountPaid": 0,
+                "barcode": "12345.12345 12345.123456 12345.123456 1 12345678901234",
+                "netAmount": 51
+              },
+              {
+                "number": 1000000512359,
+                "dueDate": "2018-07-30T09:56:34.43",
+                "canceledAt": null,
+                "paidAt": null,
+                "amount": 53.5,
+                "amountPaid": 0,
+                "barcode": "12345.12345 12345.123456 12345.123456 1 12345678901234",
+                "netAmount": 51
+              },
+              {
+                "number": 1000000512360,
+                "dueDate": "2018-08-30T09:56:34.43",
+                "canceledAt": null,
+                "paidAt": null,
+                "amount": 53.5,
+                "amountPaid": 0,
+                "barcode": "12345.12345 12345.123456 12345.123456 1 12345678901234",
+                "netAmount": 51
+              }
+            ],
+            "items": {
+              "$ref": "#/definitions/APIBoleto/bankSlips"
+            }
+          }
+        }
+      },
+      "bankSlips": {
+        "type": "object",
+        "properties": {
+          "number": {
+            "description": "Identificador único gerado automaticamente.",
+            "type": "number",
+            "example": 102598745632985
+          },
+          "dueDate": {
+            "description": "Data do vencimento (aplicável para boleto).",
+            "type": "string",
+            "example": "2018-06-30T09:56:34.43"
+          },
+          "canceledAt": {
+            "description": "Data de cancelamento do boleto.",
+            "type": "string|null",
+            "example": null
+          },
+          "paidAt": {
+            "description": "Data de pagamento do boleto.",
+            "type": "string|null",
+            "example": null
+          },
+          "amount": {
+            "description": "Valor cobrado no boleto.",
+            "type": "number",
+            "example": 53.5
+          },
+          "amountPaid": {
+            "description": "Valor pago com este cartão.",
+            "type": "number",
+            "example": 0
+          },
+          "barcode": {
+            "description": "Código de Barras.",
+            "type": "string",
+            "example": "12345.12345 12345.123456 12345.123456 1 12345678901234"
+          },
+          "netAmount": {
+            "description": "Valor líquido do boleto.",
+            "type": "number",
+            "example": 51.0
+          }
+        }
+      },
+      "ResGerarBoleto": {
+        "ValGerarBoleto": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "description": "Identificador único gerado após o pagamento.",
+              "type": "string",
+              "example": "c1d2"
+            },
+            "sellingKey": {
+              "description": "Chave informada manualmente.",
+              "type": "string|null",
+              "example": "Ab01"
+            },
+            "status": {
+              "description": "O *status* do pagamento pode assumir um dos seguintes valores: \n\n `paid`: Pagamento concluído; \n\n `pending`: Pagamento pendente; \n\n `delayed`: Pagamento vencido (aplicável para boleto ou carnê);  \n\n `canceled`: Pagamento cancelado.",
+              "type": "string",
+              "example": "paid"
+            },
+            "createdAt": {
+              "description": "Data da realização do pagamento.",
+              "type": "string",
+              "example": "2018-05-19T09:56:34.43"
+            },
+            "canceledAt": {
+              "description": "Data de cancelamento do boleto.",
+              "type": "string|null",
+              "example": null
+            },
+            "completedAt": {
+              "description": "Data em que o pagamento foi finalizado automaticamente ou de forma manual. Para mais informações confira no método [Finalizar Pagamento](#operation/finalizar-pagamento).",
+              "type": "string|null",
+              "example": null
+            },
+            "discount": {
+              "description": "Valor do desconto.",
+              "type": "number",
+              "example": 2.55
+            },
+            "fines": {
+              "description": "Valor da multa cobrada após o vencimento do boleto.",
+              "type": "number",
+              "example": 4.95
+            },
+            "interest": {
+              "description": "Valor do juros cobrado por dia após o vencimento do boleto.",
+              "type": "number",
+              "example": 3
+            },
+            "amount": {
+              "description": "Valor total do pagamento.",
+              "type": "number",
+              "example": 160.78
+            },
+            "additionalInformation": {
+              "description": "Informações adicionais sobre a finalização do pagamento.",
+              "type": "string|null",
+              "example": null
+            },
+            "cardTransactions": {
+              "description": "Informações dos boletos utilizados no pagamento.",
+              "type": "array"
+            },
+            "bankSlips": {
+              "description": "Lista dos boletos.",
+              "type": "array",
+              "xml": {
+                "name": "bankSlips",
+                "wrapped": true
+              },
+              "example": [
+                {
+                  "number": 1000000512358,
+                  "payerName": "Rodrigo Alves",
+                  "payerTaxDocument": "953.262.300-03",
+                  "dueDate": "2018-06-30",
+                  "discountLimitDate": "2018-06-05",
+                  "canceledAt": null,
+                  "paidAt": null,
+                  "createdAt": "2018-03-19T09:56:34.43",
+                  "amount": 53.57,
+                  "amountPaid": 0,
+                  "installmentNumber": 1,
+                  "status": "pending",
+                  "barcode": "12345.12345 12345.123456 12345.123456 1 12340000005350",
+                  "instructions": "APÓS O VENCIMENTO SOMENTE PAGAR EM AGÊNCIA BANCÁRIA. APÓS O VENCIMENTO O VALOR DOS JUROS E MULTA DEVEM SER SOMADOS AO VALOR DO BOLETO."
+                },
+                {
+                  "number": 1000000512359,
+                  "payerName": "Rodrigo Alves",
+                  "payerTaxDocument": "953.262.300-03",
+                  "dueDate": "2018-07-30",
+                  "discountLimitDate": "2018-07-05",
+                  "canceledAt": null,
+                  "paidAt": null,
+                  "createdAt": "2018-03-19T09:56:34.43",
+                  "amount": 53.59,
+                  "amountPaid": 0,
+                  "installmentNumber": 2,
+                  "status": "pending",
+                  "barcode": "12345.12345 12345.123456 12345.123456 1 12340000005350",
+                  "instructions": "APÓS O VENCIMENTO SOMENTE PAGAR EM AGÊNCIA BANCÁRIA. APÓS O VENCIMENTO O VALOR DOS JUROS E MULTA DEVEM SER SOMADOS AO VALOR DO BOLETO."
+                },
+                {
+                  "number": 1000000512360,
+                  "payerName": "Rodrigo Alves",
+                  "payerTaxDocument": "953.262.300-03",
+                  "dueDate": "2018-08-30",
+                  "discountLimitDate": "2018-08-05",
+                  "canceledAt": null,
+                  "paidAt": null,
+                  "createdAt": "2018-03-19T09:56:34.43",
+                  "amount": 53.61,
+                  "amountPaid": 0,
+                  "installmentNumber": 3,
+                  "status": "pending",
+                  "barcode": "12345.12345 12345.123456 12345.123456 1 12340000005350",
+                  "instructions": "APÓS O VENCIMENTO SOMENTE PAGAR EM AGÊNCIA BANCÁRIA. APÓS O VENCIMENTO O VALOR DOS JUROS E MULTA DEVEM SER SOMADOS AO VALOR DO BOLETO."
+                }
+              ],
+              "items": {
+                "$ref": "#/definitions/APIPagamento/bankSlips"
+              }
+            },
+            "splitters": {
+              "description": "Informações do pagamento com *split*.",
+              "type": "array",
+              "xml": {
+                "name": "splitters",
+                "wrapped": true
+              },
+              "items": {
+                "$ref": "#/definitions/APIPagamento/responseSplitters"
+              }
+            }
+          }
+        },
+        "BadGerarBoleto": {
+          "type": "object",
+          "properties": {
+            "errors": {
+              "type": "array",
+              "xml": {
+                "name": "Array<String>",
+                "wrapped": true
+              },
+              "items": {
+                "$ref": "#/definitions/APIBoleto/ResGerarBoleto/errors"
+              }
+            }
+          }
+        },
+        "errors": {
+          "description": "Lista contendo alguns erros.",
+          "type": "string",
+          "example": "amount: Required.\", \n\"payers: Required."
+        }
+      },
+      "listarBoleto": {
+        "type": "object",
+        "properties": {
+          "offset": {
+            "description": "Especificação da quantidade de resultados da busca em massa por página. Se este parâmetro não for informado serão assumidos valores padrão.",
+            "allOf": [
+              {
+                "$ref": "#/definitions/APIAccount/offset"
+              }
+            ]
+          }
+        }
+      },
+      "ResListarBoleto": {
+        "ValListarBoleto": {
+          "type": "object",
+          "properties": {
+            "list": {
+              "description": "Lista de boletos dos clientes dos lojistas.",
+              "type": "array",
+              "xml": {
+                "name": "list",
+                "wrapped": true
+              },
+              "items": {
+                "$ref": "#/definitions/APIBoleto/boleto"
+              }
+            },
+            "count": {
+              "description": "Total de registros encontrados.",
+              "type": "number",
+              "example": 1
+            }
+          }
+        }
+      },
+      "pdf": {
+        "type": "object",
+        "required": [
+          "payments"
+        ],
+        "properties": {
+          "payments": {
+            "description": "Lista de `paymentId`.",
+            "type": "array<paymentId>",
+            "example": [
+              "a0b1",
+              "c2d3",
+              "e4f5"
+            ]
+          }
+        }
+      },
+      "ResPdf": {
+        "BadPdf": {
+          "type": "object",
+          "properties": {
+            "errors": {
+              "type": "array",
+              "xml": {
+                "name": "errors",
+                "wrapped": true
+              },
+              "items": {
+                "$ref": "#/definitions/APIBoleto/ResPdf/errors"
+              }
+            }
+          }
+        },
+        "errors": {
+          "description": "Lista contendo alguns erros.",
+          "type": "string",
+          "example": "payments: Required."
+        },
+        "InPdf": {
+          "type": "object",
+          "properties": {
+            "error": {
+              "description": "Especificação do erro.",
+              "type": "string",
+              "example": "PAYMENT_NOT_FOUND"
+            },
+            "payments": {
+              "description": "Lista de IDs dos pagamentos não encontrados.",
+              "type": "array<string>",
+              "example": [
+                "a0b1"
+              ]
+            }
+          }
+        }
+      },
+      "ResCancelBoleto": {
+        "ValCancelBoleto": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "description": "Identificador único gerado após o pagamento.",
+              "type": "string",
+              "example": "c1d2"
+            },
+            "sellingKey": {
+              "description": "Caso deseje associar seu código interno ao pagamento na Paggcerto. Esta chave deve ser única e informada manualmente.",
+              "type": "string|null",
+              "example": "K10"
+            },
+            "status": {
+              "description": "O *status* do pagamento pode assumir um dos seguintes valores: \n\n `paid`: Pagamento concluído; \n\n `pending`: Pagamento pendente; \n\n `delayed`: Pagamento vencido (aplicável para boleto ou carnê);  \n\n `canceled`: Pagamento cancelado.",
+              "type": "string",
+              "example": "canceled"
+            },
+            "createdAt": {
+              "description": "Data da emissão do boleto.",
+              "type": "string",
+              "example": "2018-05-19T09:56:34.43"
+            },
+            "canceledAt": {
+              "description": "Data de cancelamento do boleto.",
+              "type": "string|null",
+              "example": null
+            },
+            "completedAt": {
+              "description": "Data em que o pagamento foi finalizado automaticamente ou de forma manual. Para mais informações confira no método [Finalizar Pagamento](#operation/finalizar-pagamento).",
+              "type": "string|null",
+              "example": "2018-05-19T09:56:34.43"
+            },
+            "discount": {
+              "description": "Valor do desconto.",
+              "type": "number",
+              "pattern": "Valor em porcentagem",
+              "example": 2.50
+            },
+            "fines": {
+              "description": "Valor da multa cobrada após o vencimento do boleto.",
+              "type": "number",
+              "pattern": "Valor em porcentagem",
+              "example": 4.90
+            },
+            "interest": {
+              "description": "Valor do juros cobrado por dia após o vencimento do boleto.",
+              "type": "number",
+              "pattern": "Valor em porcentagem",
+              "example": 3
+            },
+            "amount": {
+              "description": "Valor total do pagamento.",
+              "type": "number",
+              "pattern": "Valor monetário",
+              "example": 107
+            },
+            "cardTransactions": {
+              "description": "Informações de processamento  das transações dos cartões utilizados no pagamento.",
+              "type": "array"
+            },
+            "bankSlips": {
+              "description": "Lista de boletos cancelados.",
+              "type": "array",
+              "xml": {
+                "name": "bankSlips",
+                "wrapped": true
+              },
+              "example": [
+                {
+                  "number": 1000000512358,
+                  "payerName": "Rodrigo Alves",
+                  "payerTaxDocument": "953.262.300-03",
+                  "dueDate": "2018-06-19",
+                  "discountLimitDate": "2018-06-05",
+                  "canceledAt": "2018-06-07T17:56:34.43",
+                  "paidAt": null,
+                  "amount": 53.5,
+                  "amountPaid": 53.50,
+                  "installmentNumber": 1,
+                  "status": "pending",
+                  "barcode": "12345.12345 12345.123456 12345.123456 1 12340000005350",
+                  "instructions": "APÓS O VENCIMENTO SOMENTE PAGAR EM AGÊNCIA BANCÁRIA. APÓS O VENCIMENTO O VALOR DOS JUROS E MULTA DEVEM SER SOMADOS AO VALOR DO BOLETO."
+                },
+                {
+                  "number": 1000000512359,
+                  "payerName": "Rodrigo Alves",
+                  "payerTaxDocument": "953.262.300-03",
+                  "dueDate": "2018-07-19",
+                  "discountLimitDate": "2018-07-05",
+                  "canceledAt": "2018-06-07T17:56:34.43",
+                  "paidAt": null,
+                  "amount": 53.5,
+                  "amountPaid": 0,
+                  "installmentNumber": 2,
+                  "status": "pending",
+                  "barcode": "12345.12345 12345.123456 12345.123456 1 12340000005350",
+                  "instructions": "APÓS O VENCIMENTO SOMENTE PAGAR EM AGÊNCIA BANCÁRIA. APÓS O VENCIMENTO O VALOR DOS JUROS E MULTA DEVEM SER SOMADOS AO VALOR DO BOLETO."
+                }
+              ],
+              "items": {
+                "$ref": "#/definitions/APIPagamento/bankSlips"
+              }
+            }
+          }
+        },
+        "InCancelBoleto": {
+          "type": "object",
+          "properties": {
+            "error": {
+              "description": "Especificação do erro.",
+              "type": "string",
+              "example": "BANK_SLIP_NOT_FOUND"
+            }
+          }
+        }
+      },
+      "substituirBoleto": {
+        "type": "object",
+        "required": [
+          "dueDate"
+        ],
+        "properties": {
+          "discount": {
+            "description": "Valor do desconto.",
+            "type": "number",
+            "pattern": "Valor em porcentagem",
+            "example": 2.50
+          },
+          "fines": {
+            "description": "Valor da multa cobrada após o vencimento do boleto. O valor deve estar entre 0.25% e 20% do valor cobrado no boleto.",
+            "type": "number",
+            "pattern": "Valor em porcentagem",
+            "example": 4.90
+          },
+          "interest": {
+            "description": "Valor do juros cobrado por dia após o vencimento do boleto.",
+            "type": "number",
+            "pattern": "Valor em porcentagem",
+            "minimum": 0.25,
+            "maximum": 20,
+            "example": 3
+          },
+          "discountDays": {
+            "description": "Até quantos dias, anteriores a data de vencimento, será aplicado o desconto.",
+            "type": "number",
+            "minimum": 1,
+            "maximum": 30,
+            "example": 30
+          },
+          "acceptedUntil": {
+            "description": "Até quantos dias, contados a partir da data de vencimento, o boleto poderá ser pago.",
+            "type": "number",
+            "minimum": 1,
+            "maximum": 25,
+            "example": 15
+          },
+          "dueDate": {
+            "description": "Data do vencimento (aplicável para boleto).",
+            "type": "string",
+            "example": "2018-07-30"
+          },
+          "instructions": {
+            "description": "Instruções impressas no boleto.",
+            "type": "string",
+            "example": "APÓS O VENCIMENTO SOMENTE PAGAR EM AGÊNCIA BANCÁRIA. APÓS O VENCIMENTO O VALOR DOS JUROS E MULTA DEVEM SER SOMADOS AO VALOR DO BOLETO."
+          }
+        }
+      },
+      "ResSubstituirBoleto": {
+        "BadSubstituirBoleto": {
+          "type": "object",
+          "properties": {
+            "errors": {
+              "type": "array",
+              "xml": {
+                "name": "Array<String>",
+                "wrapped": true
+              },
+              "items": {
+                "$ref": "#/definitions/APIBoleto/ResSubstituirBoleto/errors"
+              }
+            }
+          }
+        },
+        "errors": {
+          "description": "Lista contendo alguns erros.",
+          "type": "string",
+          "example": "dueDate: Required."
+        },
+        "InSubstituirBoleto": {
+          "type": "object",
+          "properties": {
+            "error": {
+              "description": "Especificação do erro.",
+              "type": "string",
+              "example": "BANK_SLIP_NOT_FOUND"
+            }
+          }
+        }
+      }
+    }
